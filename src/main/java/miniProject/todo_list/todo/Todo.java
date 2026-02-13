@@ -10,11 +10,17 @@ import lombok.ToString;
 public class Todo {
 
     private Long id;
-    private String title;
+    private String task;
+    private boolean isComplete;
 
     public Todo(Long id, String title) {
         this.id = id;
-        this.title = title;
+        this.task = title;
+        this.isComplete = false;
+    }
+
+    public boolean getIsComplete() {
+        return isComplete;
     }
 
 

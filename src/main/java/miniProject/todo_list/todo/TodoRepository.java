@@ -1,5 +1,7 @@
 package miniProject.todo_list.todo;
 
+import java.util.List;
+
 public interface TodoRepository {
 
     Todo save(Todo todo);
@@ -7,5 +9,11 @@ public interface TodoRepository {
     Todo delete(Long todoId);
 
     Todo findById(Long todoId);
+
+    List<Todo> findAll();
+
+    List<Todo> findAllByComplete();
+
+    List<Todo> findByTaskContaining(String keyword);
 
 }
