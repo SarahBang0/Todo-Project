@@ -16,4 +16,5 @@ public interface TodoRepository {
 
     List<Todo> findByTaskContaining(String keyword);
 
+    List<Todo> findTodoByUserId(Long userId);
 }

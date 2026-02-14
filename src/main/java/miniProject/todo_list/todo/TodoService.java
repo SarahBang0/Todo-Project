@@ -21,4 +21,6 @@ public interface TodoService {
     List<Todo> findAllByComplete();
 
     List<Todo> findByTaskContaining(String keyword);
+
+    List<Todo> findByUserId(Long userId);
 }

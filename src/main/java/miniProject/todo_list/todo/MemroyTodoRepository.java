@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class TodoListRepository implements TodoRepository {
+public class MemroyTodoRepository implements TodoRepository {
 
     private static Map<Long, Todo> store = new HashMap<>();
 
@@ -50,6 +50,17 @@ public class TodoListRepository implements TodoRepository {
         List<Todo> todoList = new ArrayList<>();
         for(Todo todo : store.values()) {
             if(todo.getTask().contains(keyword)) {
+                todoList.add(todo);
+            }
+        }
+        return todoList;
+    }
+
+    @Override
+    public List<Todo> findTodoByUserId(Long userId) {
+        List<Todo> todoList = new ArrayList<>();
+        for(Todo todo : store.values()) {
+            if(todo.getUserId().equals(userId)) {
                 todoList.add(todo);
             }
         }

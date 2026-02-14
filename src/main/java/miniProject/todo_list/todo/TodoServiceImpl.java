@@ -1,20 +1,23 @@
 package miniProject.todo_list.todo;
 
+import miniProject.todo_list.user.User;
+import miniProject.todo_list.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Component
-public class TodoListServiceImpl implements TodoService {
+public class TodoServiceImpl implements TodoService {
 
     private final TodoRepository todoRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public TodoListServiceImpl(TodoRepository todoRepository) {
+    public TodoServiceImpl(TodoRepository todoRepository, UserRepository userRepository) {
         this.todoRepository = todoRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -96,6 +99,17 @@ public class TodoListServiceImpl implements TodoService {
         } else {
             throw new IllegalStateException("조회 실패! 키워드와 일치하는 할 일이 없습니다.");
         }
+    }
+
+    @Override
+    public List<Todo> findByUserId(Long userId) {
+        User user = userRepository.findById(userId);
+
+        if(user == null) {
+            throw new IllegalStateException("조회 실패! 존재하지 않는 유저입니다.");
+        }
+
+        return todoRepository.findTodoByUserId(user.getId());
     }
 
 
