@@ -1,4 +1,6 @@
-package miniProject.todo_list.todo;
+package miniProject.todo_list.todo.Service;
+
+import miniProject.todo_list.todo.Entity.Todo;
 
 import java.util.List;
 
@@ -10,15 +12,17 @@ public interface TodoService {
 
     Todo findTodo(Long todoId);
 
-    void updateToComplete(Long todoId);
+    void updateToComplete(Long id);
 
-    void updateToUncomplete(Long todoId);
+    void updateToUncomplete(Long id);
 
     List<Todo> findAll();
 
     List<Todo> findAllDesc();
 
     List<Todo> findAllByComplete();
+
+    List<Todo> findAllByUnComplete();
 
     List<Todo> findByTaskContaining(String keyword);
 

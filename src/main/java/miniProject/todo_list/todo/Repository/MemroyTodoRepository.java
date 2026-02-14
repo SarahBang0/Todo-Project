@@ -1,8 +1,8 @@
-package miniProject.todo_list.todo;
+package miniProject.todo_list.todo.Repository;
 
+import miniProject.todo_list.todo.Entity.Todo;
 import org.springframework.stereotype.Component;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +39,17 @@ public class MemroyTodoRepository implements TodoRepository {
         List<Todo> todoList = new ArrayList<>();
         for(Todo todo : store.values()) {
             if(todo.getIsComplete()) {
+                todoList.add(todo);
+            }
+        }
+        return todoList;
+    }
+
+    @Override
+    public List<Todo> findAllByUnComplete() {
+        List<Todo> todoList = new ArrayList<>();
+        for(Todo todo : store.values()) {
+            if(!todo.getIsComplete()) {
                 todoList.add(todo);
             }
         }

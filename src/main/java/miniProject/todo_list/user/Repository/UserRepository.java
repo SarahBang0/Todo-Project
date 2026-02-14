@@ -1,6 +1,6 @@
-package miniProject.todo_list.user;
+package miniProject.todo_list.user.Repository;
 
-import miniProject.todo_list.todo.Todo;
+import miniProject.todo_list.user.Entity.User;
 
 import java.util.List;
 

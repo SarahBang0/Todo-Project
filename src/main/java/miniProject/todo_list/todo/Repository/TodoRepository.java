@@ -1,4 +1,6 @@
-package miniProject.todo_list.todo;
+package miniProject.todo_list.todo.Repository;
+
+import miniProject.todo_list.todo.Entity.Todo;
 
 import java.util.List;
 
@@ -13,6 +15,8 @@ public interface TodoRepository {
     List<Todo> findAll();
 
     List<Todo> findAllByComplete();
+
+    List<Todo> findAllByUnComplete();
 
     List<Todo> findByTaskContaining(String keyword);
 

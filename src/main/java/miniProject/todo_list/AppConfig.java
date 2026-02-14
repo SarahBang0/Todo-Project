@@ -1,14 +1,15 @@
 package miniProject.todo_list;
 
 
-import miniProject.todo_list.todo.MemroyTodoRepository;
-import miniProject.todo_list.todo.TodoServiceImpl;
-import miniProject.todo_list.todo.TodoRepository;
-import miniProject.todo_list.todo.TodoService;
-import miniProject.todo_list.user.MemoryUserRepository;
-import miniProject.todo_list.user.UserRepository;
-import miniProject.todo_list.user.UserService;
-import miniProject.todo_list.user.UserServiceImpl;
+import miniProject.todo_list.todo.Repository.MemroyTodoRepository;
+import miniProject.todo_list.todo.Repository.TodoRepository;
+import miniProject.todo_list.todo.Service.TodoServiceImpl;
+import miniProject.todo_list.todo.Repository.JpaTodoRepository;
+import miniProject.todo_list.todo.Service.TodoService;
+import miniProject.todo_list.user.Repository.MemoryUserRepository;
+import miniProject.todo_list.user.Repository.UserRepository;
+import miniProject.todo_list.user.Service.UserService;
+import miniProject.todo_list.user.Service.UserServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -28,7 +29,7 @@ public class AppConfig {
     }
 
     @Bean
-    public UserService userService(UserRepository userRepository, TodoRepository todoRepository) {
+    public UserService userService(UserRepository userRepository, JpaTodoRepository todoRepository) {
         System.out.println("Call UserService");
         return new UserServiceImpl(userRepository, todoRepository);
     }

@@ -1,32 +1,47 @@
-package miniProject.todo_list.user;
+package miniProject.todo_list.user.Service;
 
 import miniProject.todo_list.AppConfig;
-import org.assertj.core.api.Assertions;
+import miniProject.todo_list.todo.Repository.MemroyTodoRepository;
+import miniProject.todo_list.todo.Service.TodoService;
+import miniProject.todo_list.user.Entity.User;
+import miniProject.todo_list.user.Repository.MemoryUserRepository;
 import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@Transactional
 class UserServiceImplTest {
 
+    @Autowired
     UserService userService;
-    MemoryUserRepository userRepository;
-    ApplicationContext ac = new AnnotationConfigApplicationContext(AppConfig.class);
-
-    @BeforeEach
-    public void beforeEach() {
-        userService = ac.getBean(UserService.class);
-        userRepository = ac.getBean(MemoryUserRepository.class);
-    }
+    @Autowired
+    MemroyTodoRepository todoRepository;
+    @Autowired MemoryUserRepository userRepository;
 
     @AfterEach
-    public void afterEach() {
+    void afterEach() {
+        todoRepository.clearStore();
         userRepository.clearStore();
     }
+//    UserService userService;
+//    MemoryUserRepository userRepository;
+//    ApplicationContext ac = new AnnotationConfigApplicationContext(AppConfig.class);
+//
+//    @BeforeEach
+//    public void beforeEach() {
+//        userService = ac.getBean(UserService.class);
+//        userRepository = ac.getBean(MemoryUserRepository.class);
+//    }
+
 
     @Test
     @DisplayName("유저를 생성하고 조회할 수 있어야 한다")

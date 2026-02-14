@@ -1,19 +1,15 @@
-package miniProject.todo_list.todo;
+package miniProject.todo_list.todo.Service;
 
-import miniProject.todo_list.AppConfig;
-import miniProject.todo_list.user.MemoryUserRepository;
-import miniProject.todo_list.user.User;
-import miniProject.todo_list.user.UserRepository;
-import miniProject.todo_list.user.UserService;
-import org.assertj.core.api.Assertions;
+import miniProject.todo_list.todo.Entity.Todo;
+import miniProject.todo_list.todo.Repository.MemroyTodoRepository;
+import miniProject.todo_list.user.Repository.MemoryUserRepository;
+import miniProject.todo_list.user.Entity.User;
+import miniProject.todo_list.user.Service.UserService;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.List;
 
@@ -21,10 +17,12 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class TodoListServiceImplTest {
+class TodoServiceImplTest {
 
-    @Autowired TodoService todoService;
-    @Autowired MemroyTodoRepository todoRepository;
+    @Autowired
+    TodoService todoService;
+    @Autowired
+    MemroyTodoRepository todoRepository;
     @Autowired UserService userService;
     @Autowired MemoryUserRepository userRepository;
 
@@ -80,7 +78,9 @@ class TodoListServiceImplTest {
         todoService.deleteTodo(1L);
 
         //then
-        IllegalStateException e = assertThrows(IllegalStateException.class, () -> todoService.findTodo(1L));
+        IllegalStateException e = assertThrows(IllegalStateException.class,
+                () -> todoService.findTodo(todo.getId()));
+        assertThat(e.getMessage()).isEqualTo("조회 실패! 해당하는 할 일이 없습니다.");
     }
 
     @Test

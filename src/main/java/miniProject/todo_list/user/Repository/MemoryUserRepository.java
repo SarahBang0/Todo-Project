@@ -1,13 +1,13 @@
-package miniProject.todo_list.user;
+package miniProject.todo_list.user.Repository;
 
-import miniProject.todo_list.todo.Todo;
+import miniProject.todo_list.user.Entity.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MemoryUserRepository implements UserRepository{
+public class MemoryUserRepository implements UserRepository {
 
     Map<Long, User> store = new HashMap<>();
 

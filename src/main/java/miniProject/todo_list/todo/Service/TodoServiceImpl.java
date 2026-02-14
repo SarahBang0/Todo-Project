@@ -1,14 +1,16 @@
-package miniProject.todo_list.todo;
+package miniProject.todo_list.todo.Service;
 
-import miniProject.todo_list.user.User;
-import miniProject.todo_list.user.UserRepository;
+import miniProject.todo_list.todo.Entity.Todo;
+import miniProject.todo_list.todo.Repository.JpaTodoRepository;
+import miniProject.todo_list.todo.Repository.TodoRepository;
+import miniProject.todo_list.user.Entity.User;
+import miniProject.todo_list.user.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+//@Service
 public class TodoServiceImpl implements TodoService {
 
     private final TodoRepository todoRepository;
@@ -26,8 +28,8 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public Todo deleteTodo(Long todoId) {
-        Todo todo = todoRepository.findById(todoId);
+    public Todo deleteTodo(Long id) {
+        Todo todo = todoRepository.findById(id);
         if(todo != null) {
             return todoRepository.delete(todo.getId());
         } else {
@@ -46,8 +48,8 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public void updateToComplete(Long todoId) {
-        Todo todo = todoRepository.findById(todoId);
+    public void updateToComplete(Long id) {
+        Todo todo = todoRepository.findById(id);
         if(todo != null && !todo.getIsComplete()) {
             todo.setComplete(true);
         } else {
@@ -56,8 +58,8 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public void updateToUncomplete(Long todoId) {
-        Todo todo = todoRepository.findById(todoId);
+    public void updateToUncomplete(Long id) {
+        Todo todo = todoRepository.findById(id);
         if(todo != null && todo.getIsComplete()) {
             todo.setComplete(false);
         } else {
@@ -90,6 +92,17 @@ public class TodoServiceImpl implements TodoService {
             throw new IllegalStateException("조회 실패! 완료된 할 일이 없습니다.");
         }
     }
+
+    @Override
+    public List<Todo> findAllByUnComplete() {
+        List<Todo> todoList = new ArrayList<>(todoRepository.findAllByUnComplete());
+        if(todoList.size() != 0) {
+            return todoList;
+        } else {
+            throw new IllegalStateException("조회 실패! 완료된 할 일이 없습니다.");
+        }
+    }
+
 
     @Override
     public List<Todo> findByTaskContaining(String keyword) {
