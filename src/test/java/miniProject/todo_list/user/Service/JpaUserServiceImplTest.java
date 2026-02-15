@@ -2,6 +2,9 @@ package miniProject.todo_list.user.Service;
 
 import miniProject.todo_list.todo.Service.JpaTodoServiceImpl;
 import miniProject.todo_list.user.Entity.User;
+import miniProject.todo_list.user.Repository.JpaUserRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,16 @@ class JpaUserServiceImplTest {
     JpaTodoServiceImpl jpaTodoService;
     @Autowired
     JpaUserServiceImpl jpaUserService;
+/*
+    @Autowired
+    JpaUserRepository jpaUserRepository;
+
+    @BeforeEach
+    void beforeEach() {
+        jpaUserRepository.deleteAll();
+    }
+*/
+
 
     @Test
     @DisplayName("유저를 생성하고 조회할 수 있어야 한다")
@@ -41,7 +54,9 @@ class JpaUserServiceImplTest {
         User user1 = new User(null, "spring@gmail.com", "User1");
         jpaUserService.joinUser(user1);
 
-        IllegalStateException e = assertThrows(IllegalStateException.class, ()->jpaUserService.joinUser(user1));
+
+        IllegalStateException e = assertThrows(IllegalStateException.class,
+                () -> jpaUserService.joinUser(new User(null, "spring@gmail.com", "User1")));
         assertThat(e.getMessage()).isEqualTo("유저 생성 실패! 이미 존재하는 이메일입니다.");
     }
 

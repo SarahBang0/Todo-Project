@@ -1,0 +1,15 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create  # 테스트용이라면 매번 새로 만드는 create가 편해요!
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: true
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver # 가급적 명시해주는 게 좋습니다.
+  h2:
+    console:
+      enabled: true

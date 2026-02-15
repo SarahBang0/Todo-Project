@@ -1,7 +1,7 @@
 package miniProject.todo_list;
 
 
-import miniProject.todo_list.todo.Repository.MemroyTodoRepository;
+import miniProject.todo_list.todo.Repository.MemoryTodoRepository;
 import miniProject.todo_list.todo.Repository.TodoRepository;
 import miniProject.todo_list.todo.Service.TodoServiceImpl;
 import miniProject.todo_list.todo.Repository.JpaTodoRepository;
@@ -25,7 +25,7 @@ public class AppConfig {
     @Bean
     public TodoRepository todoRepository() {
         System.out.println("Call TodoRepository");
-        return new MemroyTodoRepository();
+        return new MemoryTodoRepository();
     }
 
     @Bean

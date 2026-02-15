@@ -1,7 +1,6 @@
 package miniProject.todo_list.todo.Service;
 
 import miniProject.todo_list.todo.Entity.Todo;
-import miniProject.todo_list.todo.Repository.JpaTodoRepository;
 import miniProject.todo_list.todo.Repository.TodoRepository;
 import miniProject.todo_list.user.Entity.User;
 import miniProject.todo_list.user.Repository.UserRepository;
@@ -38,7 +37,7 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public Todo findTodo(Long todoId) {
+    public Todo findTodoById(Long todoId) {
         Todo todo = todoRepository.findById(todoId);
         if(todo != null) {
             return todo;
@@ -50,7 +49,7 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public void updateToComplete(Long id) {
         Todo todo = todoRepository.findById(id);
-        if(todo != null && !todo.getIsComplete()) {
+        if(todo != null && !todo.isComplete()) {
             todo.setComplete(true);
         } else {
             throw new IllegalStateException("상태 업데이트 실패! 해당하는 할 일이 없습니다.");
@@ -60,7 +59,7 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public void updateToUncomplete(Long id) {
         Todo todo = todoRepository.findById(id);
-        if(todo != null && todo.getIsComplete()) {
+        if(todo != null && todo.isComplete()) {
             todo.setComplete(false);
         } else {
             throw new IllegalStateException("상태 업데이트 실패! 해당하는 할 일이 없습니다.");
@@ -116,13 +115,13 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public List<Todo> findByUserId(Long userId) {
-        User user = userRepository.findById(userId);
+        User finduser = userRepository.findById(userId);
 
-        if(user == null) {
+        if(finduser == null) {
             throw new IllegalStateException("조회 실패! 존재하지 않는 유저입니다.");
         }
 
-        return todoRepository.findTodoByUserId(user.getId());
+        return todoRepository.findTodoByUserId(finduser);
     }
 
 

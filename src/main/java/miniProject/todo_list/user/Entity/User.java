@@ -1,13 +1,12 @@
 package miniProject.todo_list.user.Entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
 @Entity
 @Table(name = "Users")
 public class User {
@@ -21,10 +20,10 @@ public class User {
     protected User() {
     }
 
-    public User(Long id, String email, String userName) {
+/*    public User(Long id, String email, String userName) {
         this.id = id;
         this.email = email;
         this.userName = userName;
-    }
+    }*/
 
 }

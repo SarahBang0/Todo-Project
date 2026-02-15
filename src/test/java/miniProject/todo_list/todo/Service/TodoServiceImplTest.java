@@ -1,7 +1,7 @@
 package miniProject.todo_list.todo.Service;
 
 import miniProject.todo_list.todo.Entity.Todo;
-import miniProject.todo_list.todo.Repository.MemroyTodoRepository;
+import miniProject.todo_list.todo.Repository.MemoryTodoRepository;
 import miniProject.todo_list.user.Repository.MemoryUserRepository;
 import miniProject.todo_list.user.Entity.User;
 import miniProject.todo_list.user.Service.UserService;
@@ -22,7 +22,7 @@ class TodoServiceImplTest {
     @Autowired
     TodoService todoService;
     @Autowired
-    MemroyTodoRepository todoRepository;
+    MemoryTodoRepository todoRepository;
     @Autowired UserService userService;
     @Autowired MemoryUserRepository userRepository;
 
@@ -55,11 +55,13 @@ class TodoServiceImplTest {
     @DisplayName("할 일 생성하고 조회할 수 있어야 한다")
     void createAndFindTodo() {
         //given 주어졌을때
-        Todo todo = new Todo(1L, "clean the room", 1L);
+        User user1 = new User(null, "spring@gamil.com", "User1");
+        userService.joinUser(user1);
+        Todo todo = new Todo(1L, "clean the room", user1);
 
         //when 어떤 행위를 했을 때
         todoService.createTodo(todo);
-        Todo result = todoService.findTodo(1L);
+        Todo result = todoService.findTodoById(1L);
 
         //then 결과가 이래야 한다
         assertThat(result).isNotNull();
@@ -71,7 +73,9 @@ class TodoServiceImplTest {
     @DisplayName("삭제 성공 / 할 일을 삭제 할 수 있어야 한다")
     void deleteTodo() {
         //given
-        Todo todo = new Todo(1L, "clean the room", 1L);
+        User user1 = new User(null, "spring@gamil.com", "User1");
+        userService.joinUser(user1);
+        Todo todo = new Todo(1L, "clean the room", user1);
         todoService.createTodo(todo);
 
         //when
@@ -79,7 +83,7 @@ class TodoServiceImplTest {
 
         //then
         IllegalStateException e = assertThrows(IllegalStateException.class,
-                () -> todoService.findTodo(todo.getId()));
+                () -> todoService.findTodoById(todo.getId()));
         assertThat(e.getMessage()).isEqualTo("조회 실패! 해당하는 할 일이 없습니다.");
     }
 
@@ -94,20 +98,24 @@ class TodoServiceImplTest {
     @Test
     @DisplayName("할 일 완료 - 수정 성공 / 할 일 상태를 완료로 바꿀 수 있어야 한다")
     void updateStatus() {
-        Todo todo = new Todo(1L, "clean the room", 1L);
+        User user1 = new User(null, "spring@gamil.com", "User1");
+        userService.joinUser(user1);
+        Todo todo = new Todo(1L, "clean the room", user1);
         todoService.createTodo(todo);
 
         todoService.updateToComplete(1L);
 
-        Todo updated = todoService.findTodo(1L);
-        assertThat(updated.getIsComplete()).isTrue();
+        Todo updated = todoService.findTodoById(1L);
+        assertThat(updated.isComplete()).isTrue();
     }
 
     @Test
     @DisplayName("할 일 완료 - 수정 실패 / 존재하지 않거나 이미 완료된 할 일은 완료로 바꿀 수 없다")
     void updateStatusFail() {
         // 이미 완료인 경우
-        Todo todo = new Todo(1L, "clean the room", 1L);
+        User user1 = new User(null, "spring@gamil.com", "User1");
+        userService.joinUser(user1);
+        Todo todo = new Todo(1L, "clean the room", user1);
         todoService.createTodo(todo);
         todoService.updateToComplete(1L);
 
@@ -123,21 +131,25 @@ class TodoServiceImplTest {
     @Test
     @DisplayName("할 일 미완료 - 수정 성공 / 할 일 상태를 미완료로 바꿀 수 있어야 한다")
     void updateToUncomplete() {
-        Todo todo = new Todo(1L, "clean the room", 1L);
+        User user1 = new User(null, "spring@gamil.com", "User1");
+        userService.joinUser(user1);
+        Todo todo = new Todo(1L, "clean the room", user1);
         todoService.createTodo(todo);
         todoService.updateToComplete(1L);
 
         todoService.updateToUncomplete(1L);
 
-        Todo find = todoService.findTodo(1L);
-        assertThat(find.getIsComplete()).isFalse();
+        Todo find = todoService.findTodoById(1L);
+        assertThat(find.isComplete()).isFalse();
     }
 
     @Test
     @DisplayName("할 일 미완료 - 수정 실패 / 존재하지 않거나 미완료인 할 일을 미완료로 바꿀 수 없다.")
     void updateToUncompleteFail() {
         // 이미 미완료인 경우
-        Todo todo = new Todo(1L, "clean the room", 1L);
+        User user1 = new User(null, "spring@gamil.com", "User1");
+        userService.joinUser(user1);
+        Todo todo = new Todo(1L, "clean the room", user1);
         todoService.createTodo(todo);
 
         IllegalStateException e1 = assertThrows(IllegalStateException.class, () -> todoService.updateToUncomplete(todo.getId()));
@@ -153,8 +165,10 @@ class TodoServiceImplTest {
     @Test
     @DisplayName("할 일 목록을 모두 조회할 수 있다")
     void findAllTest() {
-        Todo todo1 = new Todo(1L, "clean the room", 1L);
-        Todo todo2 = new Todo(2L, "study spring", 1L);
+        User user1 = new User(null, "spring@gamil.com", "User1");
+        userService.joinUser(user1);
+        Todo todo1 = new Todo(1L, "clean the room", user1);
+        Todo todo2 = new Todo(2L, "study spring", user1);
 
         todoService.createTodo(todo1);
         todoService.createTodo(todo2);
@@ -166,11 +180,12 @@ class TodoServiceImplTest {
     @Test
     @DisplayName("완료된 목록들만 조회할 수 있다")
     void findAllByComplete() {
-
-        todoService.createTodo(new Todo(1L, "clean the room", 1L));
-        todoService.createTodo(new Todo(2L, "study spring", 1L));
-        todoService.createTodo(new Todo(3L, "take a shower", 1L));
-        todoService.createTodo(new Todo(4L, "sleeping", 1L));
+        User user1 = new User(null, "spring@gamil.com", "User1");
+        userService.joinUser(user1);
+        todoService.createTodo(new Todo(1L, "clean the room", user1));
+        todoService.createTodo(new Todo(2L, "study spring", user1));
+        todoService.createTodo(new Todo(3L, "take a shower", user1));
+        todoService.createTodo(new Todo(4L, "sleeping", user1));
 
         todoService.updateToComplete(1L);
         todoService.updateToComplete(3L);
@@ -182,7 +197,9 @@ class TodoServiceImplTest {
     @Test
     @DisplayName("특정 키워드로 할 일을 조회할 수 있어야 한다")
     void findByTaskContaining() {
-        Todo todo = new Todo(1L, "clean the room", 1L);
+        User user1 = new User(null, "spring@gamil.com", "User1");
+        userService.joinUser(user1);
+        Todo todo = new Todo(1L, "clean the room", user1);
         todoService.createTodo(todo);
 
         List<Todo> todoList = todoService.findByTaskContaining("clean");
@@ -192,9 +209,11 @@ class TodoServiceImplTest {
     @Test
     @DisplayName("할 일을 최신순 (Id기준 내림차순)으로 정렬할 수 있어야 한다")
     void findAllDesc() {
-        todoService.createTodo(new Todo(1L, "clean the room", 1L));
-        todoService.createTodo(new Todo(2L, "study spring", 1L));
-        todoService.createTodo(new Todo(3L, "take a shower", 1L));
+        User user1 = new User(null, "spring@gamil.com", "User1");
+        userService.joinUser(user1);
+        todoService.createTodo(new Todo(1L, "clean the room", user1));
+        todoService.createTodo(new Todo(2L, "study spring", user1));
+        todoService.createTodo(new Todo(3L, "take a shower", user1));
 
         List<Todo> result = todoService.findAllDesc();
 
@@ -206,14 +225,16 @@ class TodoServiceImplTest {
     @Test
     @DisplayName("해당 유저 아이디로 할 일 목록을 조회할 수 있다")
     void findTodosByUserId() {
-        userService.joinUser(new User(1L, "spring@gmail.com", "User1"));
-        userService.joinUser(new User(2L, "Java@gmail.com", "User2"));
+        User user1 = new User(1L, "spring@gmail.com", "User1");
+        User user2 = new User(2L, "Java@gmail.com", "User2");
+        userService.joinUser(user1);
+        userService.joinUser(user2);
 
-        todoService.createTodo(new Todo(1L, "clean the room", 1L));
-        todoService.createTodo(new Todo(2L, "study spring", 2L));
-        todoService.createTodo(new Todo(3L, "take a shower", 1L));
+        todoService.createTodo(new Todo(1L, "clean the room", user1));
+        todoService.createTodo(new Todo(2L, "study spring", user2));
+        todoService.createTodo(new Todo(3L, "take a shower", user1));
 
-        List<Todo> todoList = todoService.findByUserId(1L);
+        List<Todo> todoList = todoService.findByUserId(user1.getId());
 
         assertThat(todoList.size()).isEqualTo(2);
     }

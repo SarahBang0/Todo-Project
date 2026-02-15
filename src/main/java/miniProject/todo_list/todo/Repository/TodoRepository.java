@@ -1,6 +1,7 @@
 package miniProject.todo_list.todo.Repository;
 
 import miniProject.todo_list.todo.Entity.Todo;
+import miniProject.todo_list.user.Entity.User;
 
 import java.util.List;
 
@@ -20,5 +21,5 @@ public interface TodoRepository {
 
     List<Todo> findByTaskContaining(String keyword);
 
-    List<Todo> findTodoByUserId(Long userId);
+    List<Todo> findTodoByUserId(User user);
 }

@@ -1,6 +1,7 @@
 package miniProject.todo_list.todo.Service;
 
 import miniProject.todo_list.todo.Entity.Todo;
+import miniProject.todo_list.user.Entity.User;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ public interface TodoService {
 
     Todo deleteTodo(Long id);
 
-    Todo findTodo(Long todoId);
+    Todo findTodoById(Long todoId);
 
     void updateToComplete(Long id);
 

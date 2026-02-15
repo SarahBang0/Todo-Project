@@ -1,15 +1,11 @@
 package miniProject.todo_list.user.Service;
 
-import miniProject.todo_list.AppConfig;
-import miniProject.todo_list.todo.Repository.MemroyTodoRepository;
-import miniProject.todo_list.todo.Service.TodoService;
+import miniProject.todo_list.todo.Repository.MemoryTodoRepository;
 import miniProject.todo_list.user.Entity.User;
 import miniProject.todo_list.user.Repository.MemoryUserRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -24,7 +20,7 @@ class UserServiceImplTest {
     @Autowired
     UserService userService;
     @Autowired
-    MemroyTodoRepository todoRepository;
+    MemoryTodoRepository todoRepository;
     @Autowired MemoryUserRepository userRepository;
 
     @AfterEach

@@ -1,6 +1,7 @@
 package miniProject.todo_list.todo.Repository;
 
 import miniProject.todo_list.todo.Entity.Todo;
+import miniProject.todo_list.user.Entity.User;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class MemroyTodoRepository implements TodoRepository {
+public class MemoryTodoRepository implements TodoRepository {
 
     private static Map<Long, Todo> store = new HashMap<>();
 
@@ -38,7 +39,7 @@ public class MemroyTodoRepository implements TodoRepository {
     public List<Todo> findAllByComplete() {
         List<Todo> todoList = new ArrayList<>();
         for(Todo todo : store.values()) {
-            if(todo.getIsComplete()) {
+            if(todo.isComplete()) {
                 todoList.add(todo);
             }
         }
@@ -49,7 +50,7 @@ public class MemroyTodoRepository implements TodoRepository {
     public List<Todo> findAllByUnComplete() {
         List<Todo> todoList = new ArrayList<>();
         for(Todo todo : store.values()) {
-            if(!todo.getIsComplete()) {
+            if(!todo.isComplete()) {
                 todoList.add(todo);
             }
         }
@@ -68,10 +69,10 @@ public class MemroyTodoRepository implements TodoRepository {
     }
 
     @Override
-    public List<Todo> findTodoByUserId(Long userId) {
+    public List<Todo> findTodoByUserId(User user) {
         List<Todo> todoList = new ArrayList<>();
         for(Todo todo : store.values()) {
-            if(todo.getUserId().equals(userId)) {
+            if(todo.getUser().getId().equals(user.getId())) {
                 todoList.add(todo);
             }
         }
