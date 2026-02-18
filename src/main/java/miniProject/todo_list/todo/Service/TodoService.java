@@ -1,5 +1,7 @@
 package miniProject.todo_list.todo.Service;
 
+import miniProject.todo_list.todo.Dto.TodoCreateDto;
+import miniProject.todo_list.todo.Dto.TodoResponseDto;
 import miniProject.todo_list.todo.Entity.Todo;
 import miniProject.todo_list.user.Entity.User;
 
@@ -7,25 +9,25 @@ import java.util.List;
 
 public interface TodoService {
 
-    void createTodo(Todo todo);
+    TodoResponseDto createTodo(TodoCreateDto dto);
 
-    Todo deleteTodo(Long id);
+    Long deleteTodo(Long id);
 
-    Todo findTodoById(Long todoId);
+    TodoResponseDto findTodoById(Long todoId);
 
     void updateToComplete(Long id);
 
     void updateToUncomplete(Long id);
 
-    List<Todo> findAll();
+    List<TodoResponseDto> findAll();
 
-    List<Todo> findAllDesc();
+    List<TodoResponseDto> findAllDesc();
 
-    List<Todo> findAllByComplete();
+    List<TodoResponseDto> findAllByComplete();
 
-    List<Todo> findAllByUnComplete();
+    List<TodoResponseDto> findAllByUnComplete();
 
-    List<Todo> findByTaskContaining(String keyword);
+    List<TodoResponseDto> findByTaskContaining(String keyword);
 
-    List<Todo> findByUserId(Long userId);
+    List<TodoResponseDto> findByUserId(Long userId);
 }

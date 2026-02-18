@@ -1,5 +1,7 @@
 package miniProject.todo_list.todo.Service;
 
+import miniProject.todo_list.todo.Dto.TodoCreateDto;
+import miniProject.todo_list.todo.Dto.TodoResponseDto;
 import miniProject.todo_list.todo.Entity.Todo;
 import miniProject.todo_list.user.Entity.User;
 import miniProject.todo_list.user.Service.JpaUserServiceImpl;
@@ -26,30 +28,38 @@ class JpaTodoServiceImplTest {
     @Test
     @DisplayName("할 일을 생성하고 조회할 수 있어야 한다.")
     void createTodo() {
+        // given (유저 생성)
         User user1 = new User(null, "spring@gamil.com", "User1");
-        jpaUserService.joinUser(user1);
-        Todo todo = new Todo(null, "clean the room", user1);
+        Long savedUserId = jpaUserService.joinUser(user1);
+        // 생성용 DTO 준비
+        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
 
-        jpaTodoService.createTodo(todo);
-        Todo findTodo = jpaTodoService.findTodoById(todo.getId());
-        User findUser = jpaUserService.findUserById(user1.getId());
+        // when
+        TodoResponseDto response = jpaTodoService.createTodo(createDto);
+        TodoResponseDto todoById = jpaTodoService.findTodoById(response.getId());
 
-        assertThat(findUser.getId()).isEqualTo(user1.getId());
-        assertThat(findTodo.getId()).isEqualTo(todo.getId());
+        // then
+        assertThat(response.getTask()).isEqualTo("clean the room");
+        assertThat(response.getId()).isNotNull();
+        assertThat(todoById.getId()).isEqualTo(response.getId());
+        assertThat(todoById.getTask()).isEqualTo("clean the room");
     }
 
     @Test
     @DisplayName("삭제 성공 / 할 일을 삭제할 수 있어야 한다.")
     void deleteTodo() {
         User user1 = new User(null, "spring@gamil.com", "User1");
-        jpaUserService.joinUser(user1);
-        Todo todo = new Todo(null, "clean the room", user1);
-        jpaTodoService.createTodo(todo);
+        Long savedUserId = jpaUserService.joinUser(user1);
+        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
 
-        jpaTodoService.deleteTodo(todo.getId());
+        TodoResponseDto result = jpaTodoService.createTodo(createDto);
+        Long todoId = result.getId();
+
+        jpaTodoService.deleteTodo(todoId);
+
 
         IllegalStateException e = assertThrows(IllegalStateException.class,
-                () -> jpaTodoService.findTodoById(todo.getId()));
+                () -> jpaTodoService.findTodoById(todoId));
         assertThat(e.getMessage()).isEqualTo("조회 실패! 해당 Id의 할 일이 없습니다.");
     }
 
@@ -66,27 +76,35 @@ class JpaTodoServiceImplTest {
     @DisplayName("상태 수정 성공 / 할 일 상태를 미완료에서 완료로 바꿀 수 있다")
     void updateToComplete() {
         User user1 = new User(null, "spring@gamil.com", "User1");
-        jpaUserService.joinUser(user1);
-        Todo todo = new Todo(null, "clean the room", user1);
-        jpaTodoService.createTodo(todo);
+        Long savedUserId = jpaUserService.joinUser(user1);
+        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
 
-        jpaTodoService.updateToComplete(todo.getId());
+        TodoResponseDto result = jpaTodoService.createTodo(createDto);
+        Long todoId = result.getId();
 
-        assertThat(todo.isComplete()).isTrue();
+        // 상태 변경
+        jpaTodoService.updateToComplete(todoId);
+        TodoResponseDto updated = jpaTodoService.findTodoById(todoId);
+
+        assertThat(updated.isComplete()).isTrue();
     }
 
     @Test
     @DisplayName("상태 수정 실패 / 이미 완료인 할 일은 완료로 바꿀 수 없다")
     void updateToCompleteFail() {
         User user1 = new User(null, "spring@gamil.com", "User1");
-        jpaUserService.joinUser(user1);
-        Todo todo = new Todo(null, "clean the room", user1);
-        jpaTodoService.createTodo(todo);
-        jpaTodoService.updateToComplete(todo.getId());
+        Long savedUserId = jpaUserService.joinUser(user1);
+        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
+
+        TodoResponseDto result = jpaTodoService.createTodo(createDto);
+        Long todoId = result.getId();
+
+        // 상태 변경
+        jpaTodoService.updateToComplete(todoId);
 
         IllegalStateException e = assertThrows(IllegalStateException.class,
-                () -> jpaTodoService.updateToComplete(todo.getId()));
-        assertThat(e.getMessage()).isEqualTo("수정 실패! 완료된 할 일은 완료로 바꿀 수 없습니다.");
+                () -> jpaTodoService.updateToComplete(todoId));
+        assertThat(e.getMessage()).isEqualTo("이미 완료된 상태입니다.");
     }
 
     @Test
@@ -102,27 +120,33 @@ class JpaTodoServiceImplTest {
     @DisplayName("상태 수정 성공 / 할 일 상태를 완료에서 미완료로 바꿀 수 있다")
     void updateToUncomplete() {
         User user1 = new User(null, "spring@gamil.com", "User1");
-        jpaUserService.joinUser(user1);
-        Todo todo = new Todo(null, "clean the room", user1);
-        jpaTodoService.createTodo(todo);
-        jpaTodoService.updateToComplete(todo.getId());
+        Long savedUserId = jpaUserService.joinUser(user1);
+        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
 
-        jpaTodoService.updateToUncomplete(todo.getId());
+        TodoResponseDto result = jpaTodoService.createTodo(createDto);
+        Long todoId = result.getId();
 
-        assertThat(todo.isComplete()).isFalse();
+        jpaTodoService.updateToComplete(todoId);
+        jpaTodoService.updateToUncomplete(todoId);
+
+        TodoResponseDto updated = jpaTodoService.findTodoById(todoId);
+
+        assertThat(updated.isComplete()).isFalse();
     }
 
     @Test
     @DisplayName("상태 수정 실패 / 미완료인 할 일은 미완료로 바꿀 수 없다")
     void updateToUncmpleteFail() {
         User user1 = new User(null, "spring@gamil.com", "User1");
-        jpaUserService.joinUser(user1);
-        Todo todo = new Todo(null, "clean the room", user1);
-        jpaTodoService.createTodo(todo);
+        Long savedUserId = jpaUserService.joinUser(user1);
+        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
+
+        TodoResponseDto result = jpaTodoService.createTodo(createDto);
+        Long todoId = result.getId();
 
         IllegalStateException e = assertThrows(IllegalStateException.class,
-                () -> jpaTodoService.updateToUncomplete(todo.getId()));
-        assertThat(e.getMessage()).isEqualTo("수정 실패! 미완료인 할 일은 미완료로 바꿀 수 없습니다.");
+                () -> jpaTodoService.updateToUncomplete(todoId));
+        assertThat(e.getMessage()).isEqualTo("미완료인 할 일은 미완료로 바꿀 수 없습니다.");
     }
 
     @Test
@@ -138,9 +162,12 @@ class JpaTodoServiceImplTest {
     @DisplayName("할 일 목록 전체 조회")
     void findAll() {
         User user1 = new User(null, "spring@gamil.com", "User1");
-        jpaUserService.joinUser(user1);
-        jpaTodoService.createTodo(new Todo(null, "clean the room", user1));
-        jpaTodoService.createTodo(new Todo(null, "take a shower", user1));
+        Long savedUserId = jpaUserService.joinUser(user1);
+        TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId);
+        TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId);
+
+        TodoResponseDto result1 = jpaTodoService.createTodo(createDto1);
+        TodoResponseDto result2 = jpaTodoService.createTodo(createDto2);
 
         assertThat(jpaTodoService.findAll().size()).isEqualTo(2);
     }
@@ -149,39 +176,39 @@ class JpaTodoServiceImplTest {
     @DisplayName("할 일 목록 전체 최신순 (내림차순) 조회")
     void findAllDesc() {
         User user1 = new User(null, "spring@gamil.com", "User1");
-        jpaUserService.joinUser(user1);
+        Long savedUserId = jpaUserService.joinUser(user1);
+        TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId);
+        TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId);
+        TodoCreateDto createDto3 = new TodoCreateDto("eat something", savedUserId);
 
-        Todo todo1 = new Todo(null, "clean the room", user1);
-        Todo todo2 = new Todo(null, "take a shower", user1);
-        Todo todo3 = new Todo(null, "study spring", user1);
-        jpaTodoService.createTodo(todo1);
-        jpaTodoService.createTodo(todo2);
-        jpaTodoService.createTodo(todo3);
+        TodoResponseDto result1 = jpaTodoService.createTodo(createDto1);
+        TodoResponseDto result2 = jpaTodoService.createTodo(createDto2);
+        TodoResponseDto result3 = jpaTodoService.createTodo(createDto3);
 
-        List<Todo> result = jpaTodoService.findAllDesc();
+        List<TodoResponseDto> result = jpaTodoService.findAllDesc();
 
         assertThat(result.size()).isEqualTo(3);
 
-        assertThat(result.get(0).getId()).isEqualTo(todo3.getId());
-        assertThat(result.get(1).getId()).isEqualTo(todo2.getId());
-        assertThat(result.get(2).getId()).isEqualTo(todo1.getId());
+        assertThat(result.get(0).getId()).isEqualTo(result3.getId());
+        assertThat(result.get(1).getId()).isEqualTo(result2.getId());
+        assertThat(result.get(2).getId()).isEqualTo(result1.getId());
     }
 
     @Test
     @DisplayName("완료된 할 일들만 조회")
     void findAllByComplete() {
         User user1 = new User(null, "spring@gamil.com", "User1");
-        jpaUserService.joinUser(user1);
+        Long savedUserId = jpaUserService.joinUser(user1);
+        TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId);
+        TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId);
+        TodoCreateDto createDto3 = new TodoCreateDto("eat something", savedUserId);
 
-        Todo todo1 = new Todo(null, "clean the room", user1);
-        Todo todo2 = new Todo(null, "take a shower", user1);
-        Todo todo3 = new Todo(null, "study spring", user1);
-        jpaTodoService.createTodo(todo1);
-        jpaTodoService.createTodo(todo2);
-        jpaTodoService.createTodo(todo3);
+        TodoResponseDto result1 = jpaTodoService.createTodo(createDto1);
+        TodoResponseDto result2 = jpaTodoService.createTodo(createDto2);
+        TodoResponseDto result3 = jpaTodoService.createTodo(createDto3);
 
-        jpaTodoService.updateToComplete(todo1.getId());
-        jpaTodoService.updateToComplete(todo3.getId());
+        jpaTodoService.updateToComplete(result1.getId());
+        jpaTodoService.updateToComplete(result2.getId());
 
         assertThat(jpaTodoService.findAllByComplete().size()).isEqualTo(2);
     }
@@ -190,16 +217,16 @@ class JpaTodoServiceImplTest {
     @DisplayName("미완료인 할 일들만 조회")
     void findAllByUnComplete() {
         User user1 = new User(null, "spring@gamil.com", "User1");
-        jpaUserService.joinUser(user1);
+        Long savedUserId = jpaUserService.joinUser(user1);
+        TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId);
+        TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId);
+        TodoCreateDto createDto3 = new TodoCreateDto("eat something", savedUserId);
 
-        Todo todo1 = new Todo(null, "clean the room", user1);
-        Todo todo2 = new Todo(null, "take a shower", user1);
-        Todo todo3 = new Todo(null, "study spring", user1);
-        jpaTodoService.createTodo(todo1);
-        jpaTodoService.createTodo(todo2);
-        jpaTodoService.createTodo(todo3);
+        TodoResponseDto result1 = jpaTodoService.createTodo(createDto1);
+        TodoResponseDto result2 = jpaTodoService.createTodo(createDto2);
+        TodoResponseDto result3 = jpaTodoService.createTodo(createDto3);
 
-        jpaTodoService.updateToComplete(todo1.getId());
+        jpaTodoService.updateToComplete(result1.getId());
 
         assertThat(jpaTodoService.findAllByUnComplete().size()).isEqualTo(2);
     }
@@ -208,10 +235,13 @@ class JpaTodoServiceImplTest {
     @DisplayName("특정 키워드로 할 일을 조회할 수 있어야 한다")
     void findByTaskContaining() {
         User user1 = new User(null, "spring@gamil.com", "User1");
-        jpaUserService.joinUser(user1);
-        jpaTodoService.createTodo(new Todo(null, "clean the room", user1));
+        Long savedUserId = jpaUserService.joinUser(user1);
+        TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId);
+        TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId);
+        TodoResponseDto result1 = jpaTodoService.createTodo(createDto1);
+        TodoResponseDto result2 = jpaTodoService.createTodo(createDto2);
 
-        List<Todo> todoList = jpaTodoService.findByTaskContaining("clean");
+        List<TodoResponseDto> todoList = jpaTodoService.findByTaskContaining("clean");
         assertThat(todoList.size()).isEqualTo(1);
     }
 
@@ -220,13 +250,14 @@ class JpaTodoServiceImplTest {
     @DisplayName("해당 유저의 할 일 목록을 조회할 수 있다")
     void findTodoByUser() {
         User user1 = new User(null, "spring@gamil.com", "User1");
-        jpaUserService.joinUser(user1);
-        jpaTodoService.createTodo(new Todo(null, "clean the room", user1));
-        jpaTodoService.createTodo(new Todo(null, "take a shower", user1));
+        Long savedUserId = jpaUserService.joinUser(user1);
+        TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId);
+        TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId);
+        TodoResponseDto result1 = jpaTodoService.createTodo(createDto1);
+        TodoResponseDto result2 = jpaTodoService.createTodo(createDto2);
 
-        List<Todo> byUser = jpaTodoService.findByUserId(user1.getId());
+        List<TodoResponseDto> byUser = jpaTodoService.findByUserId(savedUserId);
         assertThat(byUser.size()).isEqualTo(2);
     }
-
 
 }

@@ -1,5 +1,7 @@
 package miniProject.todo_list.todo.Service;
 
+import miniProject.todo_list.todo.Dto.TodoCreateDto;
+import miniProject.todo_list.todo.Dto.TodoResponseDto;
 import miniProject.todo_list.todo.Entity.Todo;
 import miniProject.todo_list.todo.Repository.JpaTodoRepository;
 import miniProject.todo_list.user.Entity.User;
@@ -9,6 +11,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,25 +29,28 @@ public class JpaTodoServiceImpl implements TodoService{
     }
 
     @Override
-    public void createTodo(Todo todo) {
-        Long userId = todo.getUser().getId();
+    public TodoResponseDto createTodo(TodoCreateDto dto) {
+        Long userId = dto.getUserId();
         User findUser = jpaUserRepository.findById(userId).orElseThrow(()->
                 new IllegalStateException("해당 유저는 존재하지 않습니다."));
-        todo.setUser(findUser);
-        jpaTodoRepository.save(todo);
+        Todo todo = dto.toEntity(findUser);
+        Todo savedTodo = jpaTodoRepository.save(todo);
+        return TodoResponseDto.fromEntity(savedTodo);
     }
 
     @Override
-    public Todo deleteTodo(Long id) {
-        Todo todo = jpaTodoRepository.findById(id).orElseThrow(()-> new IllegalStateException("삭제 실패! 해당 Id의 할 일이 없습니다."));
-        jpaTodoRepository.delete(todo);
-        return todo;
+    public Long deleteTodo(Long id) {
+        Todo findTodo = jpaTodoRepository.findById(id).orElseThrow(()->
+                new IllegalStateException("삭제 실패! 해당 Id의 할 일이 없습니다."));
+        jpaTodoRepository.delete(findTodo);
+        return id;
     }
 
     @Override
-    public Todo findTodoById(Long id) {
-        return jpaTodoRepository.findById(id).orElseThrow(()->
+    public TodoResponseDto findTodoById(Long id) {
+        Todo findTodo = jpaTodoRepository.findById(id).orElseThrow(()->
                 new IllegalStateException("조회 실패! 해당 Id의 할 일이 없습니다."));
+        return TodoResponseDto.fromEntity(findTodo);
     }
 
     @Override
@@ -52,10 +58,7 @@ public class JpaTodoServiceImpl implements TodoService{
     public void updateToComplete(Long id) {
         Todo todo = jpaTodoRepository.findById(id)
                 .orElseThrow(()-> new IllegalStateException("조회 실패! 해당 Id의 할 일이 없습니다."));
-        if(todo.isComplete()) {
-            throw new IllegalStateException("수정 실패! 완료된 할 일은 완료로 바꿀 수 없습니다.");
-        }
-        todo.setComplete(true);
+        todo.complete();
     }
 
     @Override
@@ -63,43 +66,68 @@ public class JpaTodoServiceImpl implements TodoService{
     public void updateToUncomplete(Long id) {
         Todo todo = jpaTodoRepository.findById(id)
                 .orElseThrow(()-> new IllegalStateException("조회 실패! 해당 Id의 할 일이 없습니다."));
-        if(todo.isComplete()) {
-            todo.setComplete(false);
-        } else {
-            throw new IllegalStateException("수정 실패! 미완료인 할 일은 미완료로 바꿀 수 없습니다.");
+        todo.unComplete();
+    }
+
+    @Override
+    public List<TodoResponseDto> findAll() {
+        List<Todo> todoList = jpaTodoRepository.findAll();
+        List<TodoResponseDto> todoResponseDtos = new ArrayList<>();
+        for(Todo todo : todoList) {
+            todoResponseDtos.add(TodoResponseDto.fromEntity(todo));
         }
-
+        return todoResponseDtos;
     }
 
     @Override
-    public List<Todo> findAll() {
-        return jpaTodoRepository.findAll();
+    public List<TodoResponseDto> findAllDesc() {
+        List<Todo> todoList = jpaTodoRepository.findAllByOrderByIdDesc();
+        List<TodoResponseDto> todoResponseDtos = new ArrayList<>();
+        for(Todo todo : todoList) {
+            todoResponseDtos.add(TodoResponseDto.fromEntity(todo));
+        }
+        return todoResponseDtos;
     }
 
     @Override
-    public List<Todo> findAllDesc() {
-        return jpaTodoRepository.findAllByOrderByIdDesc();
+    public List<TodoResponseDto> findAllByComplete() {
+        List<Todo> todoList = jpaTodoRepository.findByIsCompleteTrue();
+        List<TodoResponseDto> todoResponseDtos = new ArrayList<>();
+        for(Todo todo : todoList) {
+            todoResponseDtos.add(TodoResponseDto.fromEntity(todo));
+        }
+        return todoResponseDtos;
     }
 
     @Override
-    public List<Todo> findAllByComplete() {
-        return jpaTodoRepository.findByIsCompleteTrue();
+    public List<TodoResponseDto> findAllByUnComplete() {
+        List<Todo> todoList = jpaTodoRepository.findByIsCompleteFalse();
+        List<TodoResponseDto> todoResponseDtos = new ArrayList<>();
+        for(Todo todo : todoList) {
+            todoResponseDtos.add(TodoResponseDto.fromEntity(todo));
+        }
+        return todoResponseDtos;
     }
 
     @Override
-    public List<Todo> findAllByUnComplete() {
-        return jpaTodoRepository.findByIsCompleteFalse();
+    public List<TodoResponseDto> findByTaskContaining(String keyword) {
+        List<Todo> todoList = jpaTodoRepository.findByTaskContaining(keyword);
+        List<TodoResponseDto> todoResponseDtos = new ArrayList<>();
+        for(Todo todo : todoList) {
+            todoResponseDtos.add(TodoResponseDto.fromEntity(todo));
+        }
+        return todoResponseDtos;
     }
 
     @Override
-    public List<Todo> findByTaskContaining(String keyword) {
-        return jpaTodoRepository.findByTaskContaining(keyword);
-    }
-
-    @Override
-    public List<Todo> findByUserId(Long userId) {
+    public List<TodoResponseDto> findByUserId(Long userId) {
         User findedUser = jpaUserRepository.findById(userId).orElseThrow(()->
                 new IllegalStateException("존재하지 않는 유저입니다."));
-        return jpaTodoRepository.findByUserId(findedUser.getId());
+        List<Todo> todoList = jpaTodoRepository.findByUserId(findedUser.getId());
+        List<TodoResponseDto> todoResponseDtos = new ArrayList<>();
+        for(Todo todo : todoList) {
+            todoResponseDtos.add(TodoResponseDto.fromEntity(todo));
+        }
+        return todoResponseDtos;
     }
 }

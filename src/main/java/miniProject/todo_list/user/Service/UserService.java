@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface UserService {
 
-    void joinUser(User user);
+    Long joinUser(User user);
 
     void quitUser(Long requestId, Long targetId);
 

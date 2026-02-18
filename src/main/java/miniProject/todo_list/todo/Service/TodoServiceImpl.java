@@ -1,5 +1,7 @@
+/*
 package miniProject.todo_list.todo.Service;
 
+import miniProject.todo_list.todo.Dto.TodoCreateDto;
 import miniProject.todo_list.todo.Entity.Todo;
 import miniProject.todo_list.todo.Repository.TodoRepository;
 import miniProject.todo_list.user.Entity.User;
@@ -22,7 +24,10 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public void createTodo(Todo todo) {
+    public void createTodo(TodoCreateDto dto) {
+        Long userId = dto.getUserId();
+        User findUser = userRepository.findById(userId);
+        Todo todo = dto.toEntity(findUser);
         todoRepository.save(todo);
     }
 
@@ -126,3 +131,4 @@ public class TodoServiceImpl implements TodoService {
 
 
 }
+*/

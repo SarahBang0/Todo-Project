@@ -2,6 +2,8 @@ package miniProject.todo_list.todo;
 
 
 import lombok.RequiredArgsConstructor;
+import miniProject.todo_list.todo.Dto.TodoCreateDto;
+import miniProject.todo_list.todo.Dto.TodoResponseDto;
 import miniProject.todo_list.todo.Entity.Todo;
 import miniProject.todo_list.todo.Service.JpaTodoServiceImpl;
 import miniProject.todo_list.todo.Service.TodoService;
@@ -18,49 +20,48 @@ public class TodoController {
 
     // 모든 할 일 목록 조회
     @GetMapping("/api/todos")
-    public List<Todo> findAllTodos() {
+    public List<TodoResponseDto> findAllTodos() {
         return jpaTodoService.findAll();
     }
 
     // 모든 할 일 목록 최신순 조회
     @GetMapping("/api/todos/desc")
-    public List<Todo> findAllTodosDesc() {
+    public List<TodoResponseDto> findAllTodosDesc() {
         return  jpaTodoService.findAllDesc();
     }
 
     // 특정 할 일 조회
     @GetMapping("/api/todos/{id}")
-    public Todo findTodo(@PathVariable Long id) {
+    public TodoResponseDto findTodo(@PathVariable Long id) {
         return jpaTodoService.findTodoById(id);
     }
 
     // 완료된 할 일 목록 조회
     @GetMapping("/api/todos/complete")
-    public List<Todo> findTodoComplete() {
+    public List<TodoResponseDto> findTodoComplete() {
         return jpaTodoService.findAllByComplete();
     }
 
     // 미완료인 할 일 목록 조회
     @GetMapping("/api/todos/uncomplete")
-    public List<Todo> findTodoUnComplete() {
+    public List<TodoResponseDto> findTodoUnComplete() {
         return jpaTodoService.findAllByUnComplete();
     }
 
     // 특정 키워드로 할 일 찾기 (/api/todos/search/java)
     @GetMapping("/api/todos/search")
-    public List<Todo> findTodoByKeyword(@RequestParam("keyword") String keyword) {
+    public List<TodoResponseDto> findTodoByKeyword(@RequestParam("keyword") String keyword) {
         return jpaTodoService.findByTaskContaining(keyword);
     }
 
     // 새로운 할 일 생성
-    @PostMapping("/api/todos/create")
-    public Todo createTodo(@RequestBody Todo todo) {
-        jpaTodoService.createTodo(todo);
-        return todo;
+    @PostMapping("/api/todos")
+    public TodoResponseDto createTodo(@RequestBody TodoCreateDto dto) {
+        return jpaTodoService.createTodo(dto);
     }
 
     // 할 일 삭제
-    @DeleteMapping("/api/todos/{id}/delete")
+    @DeleteMapping("/api/todos/{id}")
     public void deleteTodo(@PathVariable Long id) {
         jpaTodoService.deleteTodo(id);
     }
@@ -68,21 +69,21 @@ public class TodoController {
 
     // 특정 할 일 상태 변경 (미완료 -> 완료)
     @PatchMapping("/api/todos/{id}/complete")
-    public Todo todoComplete(@PathVariable Long id) {
+    public TodoResponseDto todoComplete(@PathVariable Long id) {
         jpaTodoService.updateToComplete(id);
         return jpaTodoService.findTodoById(id);
     }
 
     // 특정 할 일 상태 변경 (완료 -> 미완료)
     @PatchMapping("/api/todos/{id}/uncomplete")
-    public Todo todoUnComplete(@PathVariable Long id) {
+    public TodoResponseDto todoUnComplete(@PathVariable Long id) {
         jpaTodoService.updateToUncomplete(id);
         return jpaTodoService.findTodoById(id);
     }
 
     // 특정 유저로 할 일 목록 가져오기
     @GetMapping("/api/todos/user/{id}")
-    public List<Todo> findTodoByUser(@PathVariable Long id) {
+    public List<TodoResponseDto> findTodoByUser(@PathVariable Long id) {
         return jpaTodoService.findByUserId(id);
     }
 

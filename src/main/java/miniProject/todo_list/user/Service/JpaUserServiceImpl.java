@@ -21,7 +21,7 @@ public class JpaUserServiceImpl implements UserService{
     }
 
     @Override
-    public void joinUser(User user) {
+    public Long joinUser(User user) {
         System.out.println("전달받은 이메일 = [" + user.getEmail()+"]");
 
         if(user.getEmail()==null) {
@@ -32,6 +32,7 @@ public class JpaUserServiceImpl implements UserService{
             throw new IllegalStateException("유저 생성 실패! 이미 존재하는 이메일입니다.");
         }
         jpaUserRepository.save(user);
+        return user.getId();
     }
 
     @Override

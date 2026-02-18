@@ -1,16 +1,14 @@
 package miniProject.todo_list.todo.Entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import miniProject.todo_list.user.Entity.User;
 
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "Todos")
 public class Todo {
@@ -39,6 +37,22 @@ public class Todo {
 
     public boolean isComplete() {
         return isComplete;
+    }
+
+    public void complete() {
+        if(this.isComplete) {
+            throw new IllegalStateException("이미 완료된 상태입니다.");
+        } else {
+            this.isComplete = true;
+        }
+    }
+
+    public void unComplete() {
+        if(!this.isComplete) {
+            throw new IllegalStateException("미완료인 할 일은 미완료로 바꿀 수 없습니다.");
+        } else {
+            this.isComplete = false;
+        }
     }
 
 
