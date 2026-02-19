@@ -2,6 +2,7 @@ package miniProject.todo_list.todo.Service;
 
 import miniProject.todo_list.todo.Dto.TodoCreateDto;
 import miniProject.todo_list.todo.Dto.TodoResponseDto;
+import miniProject.todo_list.todo.Dto.TodoUpdateDto;
 import miniProject.todo_list.todo.Entity.Priority;
 import miniProject.todo_list.todo.Entity.Todo;
 import miniProject.todo_list.todo.Repository.JpaTodoRepository;
@@ -159,5 +160,25 @@ public class JpaTodoServiceImpl implements TodoService{
             todoResponseDtos.add(TodoResponseDto.fromEntity(todo));
         }
         return  todoResponseDtos;
+    }
+
+    @Override
+    @Transactional
+    public TodoResponseDto updateTodo(Long todoId, TodoUpdateDto dto) {
+        Todo findTodo = jpaTodoRepository.findById(todoId).orElseThrow(()->
+                new IllegalStateException("조회 실패! 해당 Id의 할 일이 없습니다."));
+
+        if(dto.getTask()!=null) {
+            findTodo.setTask(dto.getTask());
+        }
+
+        if(dto.getIsComplete() != null) {
+            if(dto.getIsComplete()) findTodo.complete();
+            else findTodo.unComplete();
+        }
+        if(dto.getPriority() != null) {
+            findTodo.setPriority(dto.getPriority());
+        }
+        return TodoResponseDto.fromEntity(findTodo);
     }
 }

@@ -4,6 +4,7 @@ package miniProject.todo_list.todo;
 import lombok.RequiredArgsConstructor;
 import miniProject.todo_list.todo.Dto.TodoCreateDto;
 import miniProject.todo_list.todo.Dto.TodoResponseDto;
+import miniProject.todo_list.todo.Dto.TodoUpdateDto;
 import miniProject.todo_list.todo.Entity.Priority;
 import miniProject.todo_list.todo.Service.TodoService;
 import org.springframework.web.bind.annotation.*;
@@ -103,5 +104,11 @@ public class TodoController {
     @GetMapping("/api/todos/sorted-by-priority")
     public List<TodoResponseDto> findTodoByOrderByPriorityAsc() {
         return jpaTodoService.findAllByOrderByPriorityAsc();
+    }
+
+    @PatchMapping("/api/todos/{id}")
+    public TodoResponseDto updateTodo(@PathVariable Long id, @RequestBody TodoUpdateDto dto) {
+        TodoResponseDto updated = jpaTodoService.updateTodo(id, dto);
+        return updated;
     }
 }

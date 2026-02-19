@@ -2,6 +2,8 @@ package miniProject.todo_list.todo.Service;
 
 import miniProject.todo_list.todo.Dto.TodoCreateDto;
 import miniProject.todo_list.todo.Dto.TodoResponseDto;
+import miniProject.todo_list.todo.Dto.TodoUpdateDto;
+import miniProject.todo_list.todo.Entity.Priority;
 import miniProject.todo_list.user.Dto.UserJoinDto;
 import miniProject.todo_list.user.Dto.UserResponseDto;
 import miniProject.todo_list.user.Service.JpaUserServiceImpl;
@@ -113,6 +115,19 @@ public class JpaTodoServiceImplUpdateTest {
         IllegalStateException e = assertThrows(IllegalStateException.class,
                 () -> jpaTodoService.updateToUncomplete(temp));
         assertThat(e.getMessage()).isEqualTo("조회 실패! 해당 Id의 할 일이 없습니다.");
+    }
+
+    @Test
+    @DisplayName("할 일 이름 / 우선순위 / 완료 상태 변경")
+    void upateTodo() {
+        UserResponseDto user = jpaUserService.joinUser(new UserJoinDto("spring@gmail.com", "Sarah"));
+        TodoResponseDto todo = jpaTodoService.createTodo(new TodoCreateDto("clean the room", user.getId(), null));
+
+        TodoResponseDto updated = jpaTodoService.updateTodo(todo.getId(), new TodoUpdateDto("drink water", true, Priority.HIGH));
+
+        assertThat(updated.getTask()).isEqualTo("drink water");
+        assertThat(updated.isComplete()).isTrue();
+        assertThat(updated.getPriority()).isEqualTo(Priority.HIGH);
     }
 
 

@@ -3,6 +3,7 @@ package miniProject.todo_list.user.Service;
 import miniProject.todo_list.todo.Service.JpaTodoServiceImpl;
 import miniProject.todo_list.user.Dto.UserJoinDto;
 import miniProject.todo_list.user.Dto.UserResponseDto;
+import miniProject.todo_list.user.Dto.UserUpdateDto;
 import miniProject.todo_list.user.Entity.User;
 import miniProject.todo_list.user.Repository.JpaUserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -106,10 +107,18 @@ class JpaUserServiceImplTest {
     @DisplayName("모든 유저 목록을 조회할 수 있다")
     void findUserAll() {
         jpaUserService.joinUser(new UserJoinDto("spring@gmail.com", "User1"));
-        jpaUserService.joinUser(new UserJoinDto( "java@gmail.com", "User2"));
+        jpaUserService.joinUser(new UserJoinDto("java@gmail.com", "User2"));
 
         List<UserResponseDto> userResponseDtos = jpaUserService.findAll();
         assertThat(userResponseDtos.size()).isEqualTo(2);
     }
 
+    @Test
+    @DisplayName("유저 이메일 / 이름을 변경할 수 있다")
+    void updateUser() {
+        UserResponseDto dto = jpaUserService.joinUser(new UserJoinDto("spring@gmail.com", "User1"));
+        UserResponseDto updated = jpaUserService.updateUser(dto.getId(), new UserUpdateDto("java@gmail.com", "Hello"));
+
+        assertThat(updated.getUserName()).isEqualTo("Hello");
+    }
 }

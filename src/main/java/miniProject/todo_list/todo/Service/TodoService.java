@@ -2,6 +2,7 @@ package miniProject.todo_list.todo.Service;
 
 import miniProject.todo_list.todo.Dto.TodoCreateDto;
 import miniProject.todo_list.todo.Dto.TodoResponseDto;
+import miniProject.todo_list.todo.Dto.TodoUpdateDto;
 import miniProject.todo_list.todo.Entity.Priority;
 
 import java.util.List;
@@ -35,4 +36,6 @@ public interface TodoService {
     List<TodoResponseDto> findAllByPriority(Priority priority);
 
     List<TodoResponseDto> findAllByOrderByPriorityAsc();
+
+    TodoResponseDto updateTodo(Long todoId, TodoUpdateDto dto);
 }

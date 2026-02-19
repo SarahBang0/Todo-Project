@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import miniProject.todo_list.todo.Service.JpaTodoServiceImpl;
 import miniProject.todo_list.user.Dto.UserJoinDto;
 import miniProject.todo_list.user.Dto.UserResponseDto;
+import miniProject.todo_list.user.Dto.UserUpdateDto;
 import miniProject.todo_list.user.Entity.User;
 import miniProject.todo_list.user.Service.JpaUserServiceImpl;
 import miniProject.todo_list.user.Service.UserService;
@@ -42,6 +43,11 @@ public class UserController {
         jpaUserService.quitUser(id, id);
     }
 
+    // 유저 정보 변경
+    @PatchMapping("/api/user/{id}")
+    public UserResponseDto updateUser(@PathVariable Long id, @RequestBody UserUpdateDto dto) {
+        return jpaUserService.updateUser(id, dto);
+    }
 
 
 }

@@ -71,6 +71,9 @@ public class Todo {
         }
     }
 
+    public void setComplete(boolean isComplete) {
+        this.isComplete = isComplete;
+    }
 
     public void changePriority(Priority priority) {
         this.priority = priority;

@@ -3,13 +3,16 @@ package miniProject.todo_list.user.Service;
 import miniProject.todo_list.todo.Repository.JpaTodoRepository;
 import miniProject.todo_list.user.Dto.UserJoinDto;
 import miniProject.todo_list.user.Dto.UserResponseDto;
+import miniProject.todo_list.user.Dto.UserUpdateDto;
 import miniProject.todo_list.user.Entity.User;
 import miniProject.todo_list.user.Repository.JpaUserRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Primary
@@ -68,5 +71,20 @@ public class JpaUserServiceImpl implements UserService{
             userResponseDtos.add(UserResponseDto.fromEntity(user));
         }
         return userResponseDtos;
+    }
+
+    @Override
+    @Transactional
+    public UserResponseDto updateUser(Long userId, UserUpdateDto dto) {
+        User findUser = jpaUserRepository.findById(userId).orElseThrow(()->
+                new IllegalStateException("조회 실패! 해당 Id의 유저가 없습니다."));
+        if(dto.getEmail()!=null) {
+            findUser.setEmail(dto.getEmail());
+        }
+        if(dto.getUserName()!=null) {
+            findUser.setUserName(dto.getUserName());
+        }
+
+        return UserResponseDto.fromEntity(findUser);
     }
 }
