@@ -1,18 +1,20 @@
 package miniProject.todo_list.user.Service;
 
+import miniProject.todo_list.user.Dto.UserJoinDto;
+import miniProject.todo_list.user.Dto.UserResponseDto;
 import miniProject.todo_list.user.Entity.User;
 
 import java.util.List;
 
 public interface UserService {
 
-    Long joinUser(User user);
+    UserResponseDto joinUser(UserJoinDto dto);
 
-    void quitUser(Long requestId, Long targetId);
+    Long quitUser(Long requestId, Long targetId);
 
-    User findUserById(Long id);
+    UserResponseDto findUserById(Long id);
 
-    List<User> findAll();
+    List<UserResponseDto> findAll();
 
 
 

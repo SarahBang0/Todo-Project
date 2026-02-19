@@ -1,6 +1,8 @@
 package miniProject.todo_list.user.Service;
 
 import miniProject.todo_list.todo.Service.JpaTodoServiceImpl;
+import miniProject.todo_list.user.Dto.UserJoinDto;
+import miniProject.todo_list.user.Dto.UserResponseDto;
 import miniProject.todo_list.user.Entity.User;
 import miniProject.todo_list.user.Repository.JpaUserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -18,12 +21,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles("test")
 class JpaUserServiceImplTest {
 
     @Autowired
     JpaTodoServiceImpl jpaTodoService;
     @Autowired
     JpaUserServiceImpl jpaUserService;
+    @Autowired
+    JpaUserRepository jpaUserRepository;
 /*
     @Autowired
     JpaUserRepository jpaUserRepository;
@@ -38,48 +44,54 @@ class JpaUserServiceImplTest {
     @Test
     @DisplayName("유저를 생성하고 조회할 수 있어야 한다")
     void joinUser() {
-        User user1 = new User(null, "spring@gmail.com", "User1");
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        Long savedUserId = savedUser.getId();
 
-        jpaUserService.joinUser(user1);
-        User userById = jpaUserService.findUserById(user1.getId());
 
-        assertThat(userById).isEqualTo(user1);
+        // dto 저장 확인
         assertThat(user1.getUserName()).isEqualTo("User1");
-        assertThat(user1.getId()).isEqualTo(userById.getId());
+        // entity 저장 확인
+        assertThat(savedUserId).isEqualTo(savedUser.getId());
+        assertThat(savedUser.getId()).isEqualTo(savedUserId);
+        assertThat(savedUser.getUserName()).isEqualTo("User1");
     }
 
     @Test
     @DisplayName("유저 생성 실패 / 이미 존재하는 이메일로 회원을 생성할 수 없다")
     void joinUserFail() {
-        User user1 = new User(null, "spring@gmail.com", "User1");
-        jpaUserService.joinUser(user1);
-
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        Long savedUserId = savedUser.getId();
 
         IllegalStateException e = assertThrows(IllegalStateException.class,
-                () -> jpaUserService.joinUser(new User(null, "spring@gmail.com", "User1")));
+                () -> jpaUserService.joinUser(new UserJoinDto("spring@gmail.com", "User2")));
         assertThat(e.getMessage()).isEqualTo("유저 생성 실패! 이미 존재하는 이메일입니다.");
     }
 
     @Test
     @DisplayName("유저 탈퇴 성공 케이스")
     void quitUser() {
-        User user1 = new User(null, "spring@gmail.com", "User1");
-        jpaUserService.joinUser(user1);
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        Long savedUserId = savedUser.getId();
 
-        jpaUserService.quitUser(user1.getId(), user1.getId());
+        jpaUserService.quitUser(savedUserId, savedUserId);
 
         IllegalStateException e = assertThrows(IllegalStateException.class,
-                () -> jpaUserService.findUserById(user1.getId()));
+                () -> jpaUserService.findUserById(savedUserId));
         assertThat(e.getMessage()).isEqualTo("조회 실패! 해당 Id의 유저가 없습니다.");
     }
 
     @Test
     @DisplayName("유저 탈퇴 실패 - 요청아이디와 타켓아이디 불일치")
     void quitUserFail() {
-        User user1 = new User(null, "spring@gmail.com", "User1");
-        jpaUserService.joinUser(user1);
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        Long savedUserId = savedUser.getId();
 
-        IllegalStateException e = assertThrows(IllegalStateException.class, () -> jpaUserService.quitUser(1234L, user1.getId()));
+        IllegalStateException e = assertThrows(IllegalStateException.class,
+                () -> jpaUserService.quitUser(1234L, savedUserId));
         assertThat(e.getMessage()).isEqualTo("유저 삭제 실패! 요청된 Id와 삭제할 Id가 같지 않습니다.");
     }
 
@@ -87,18 +99,19 @@ class JpaUserServiceImplTest {
     @DisplayName("유저 탈퇴 실패 - 존재하지 않는 유저 삭제")
     void quitUserFail2() {
         Long temp = 123456L;
-        IllegalStateException e = assertThrows(IllegalStateException.class, () -> jpaUserService.quitUser(temp, temp));
+        IllegalStateException e = assertThrows(IllegalStateException.class,
+                () -> jpaUserService.quitUser(temp, temp));
         assertThat(e.getMessage()).isEqualTo("유저 삭제 실패! 해당 Id의 유저가 없습니다.");
     }
 
     @Test
     @DisplayName("모든 유저 목록을 조회할 수 있다")
     void findUserAll() {
-        jpaUserService.joinUser(new User(null, "spring@gmail.com", "User1"));
-        jpaUserService.joinUser(new User(null, "java@gmail.com", "User2"));
+        jpaUserService.joinUser(new UserJoinDto("spring@gmail.com", "User1"));
+        jpaUserService.joinUser(new UserJoinDto( "java@gmail.com", "User2"));
 
-        List<User> users = jpaUserService.findAll();
-        assertThat(users.size()).isEqualTo(2);
+        List<UserResponseDto> userResponseDtos = jpaUserService.findAll();
+        assertThat(userResponseDtos.size()).isEqualTo(2);
     }
 
 }

@@ -1,0 +1,13 @@
+# src/test/resources/application-test.yml
+spring:
+  datasource:
+    # 'mem:testdb'는 메모리에만 존재하므로 기존 H2 파일 데이터와 완전히 격리됩니다.
+    url: jdbc:h2:mem:testdb;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      # 테스트 시작 시 테이블을 새로 만들고, 끝나면 지웁니다. (기존 데이터 영향 ZERO)
+      ddl-auto: create-drop
+    show-sql: true

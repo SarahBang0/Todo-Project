@@ -3,12 +3,15 @@ package miniProject.todo_list.todo.Service;
 import miniProject.todo_list.todo.Dto.TodoCreateDto;
 import miniProject.todo_list.todo.Dto.TodoResponseDto;
 import miniProject.todo_list.todo.Entity.Todo;
+import miniProject.todo_list.user.Dto.UserJoinDto;
+import miniProject.todo_list.user.Dto.UserResponseDto;
 import miniProject.todo_list.user.Entity.User;
 import miniProject.todo_list.user.Service.JpaUserServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -18,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles("test")
 class JpaTodoServiceImplTest {
 
     @Autowired
@@ -29,8 +33,9 @@ class JpaTodoServiceImplTest {
     @DisplayName("할 일을 생성하고 조회할 수 있어야 한다.")
     void createTodo() {
         // given (유저 생성)
-        User user1 = new User(null, "spring@gamil.com", "User1");
-        Long savedUserId = jpaUserService.joinUser(user1);
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        Long savedUserId = savedUser.getId();
         // 생성용 DTO 준비
         TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
 
@@ -48,10 +53,11 @@ class JpaTodoServiceImplTest {
     @Test
     @DisplayName("삭제 성공 / 할 일을 삭제할 수 있어야 한다.")
     void deleteTodo() {
-        User user1 = new User(null, "spring@gamil.com", "User1");
-        Long savedUserId = jpaUserService.joinUser(user1);
-        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        Long savedUserId = savedUser.getId();
 
+        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
         TodoResponseDto result = jpaTodoService.createTodo(createDto);
         Long todoId = result.getId();
 
@@ -75,10 +81,11 @@ class JpaTodoServiceImplTest {
     @Test
     @DisplayName("상태 수정 성공 / 할 일 상태를 미완료에서 완료로 바꿀 수 있다")
     void updateToComplete() {
-        User user1 = new User(null, "spring@gamil.com", "User1");
-        Long savedUserId = jpaUserService.joinUser(user1);
-        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        Long savedUserId = savedUser.getId();
 
+        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
         TodoResponseDto result = jpaTodoService.createTodo(createDto);
         Long todoId = result.getId();
 
@@ -92,10 +99,11 @@ class JpaTodoServiceImplTest {
     @Test
     @DisplayName("상태 수정 실패 / 이미 완료인 할 일은 완료로 바꿀 수 없다")
     void updateToCompleteFail() {
-        User user1 = new User(null, "spring@gamil.com", "User1");
-        Long savedUserId = jpaUserService.joinUser(user1);
-        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        Long savedUserId = savedUser.getId();
 
+        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
         TodoResponseDto result = jpaTodoService.createTodo(createDto);
         Long todoId = result.getId();
 
@@ -119,10 +127,11 @@ class JpaTodoServiceImplTest {
     @Test
     @DisplayName("상태 수정 성공 / 할 일 상태를 완료에서 미완료로 바꿀 수 있다")
     void updateToUncomplete() {
-        User user1 = new User(null, "spring@gamil.com", "User1");
-        Long savedUserId = jpaUserService.joinUser(user1);
-        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        Long savedUserId = savedUser.getId();
 
+        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
         TodoResponseDto result = jpaTodoService.createTodo(createDto);
         Long todoId = result.getId();
 
@@ -137,10 +146,11 @@ class JpaTodoServiceImplTest {
     @Test
     @DisplayName("상태 수정 실패 / 미완료인 할 일은 미완료로 바꿀 수 없다")
     void updateToUncmpleteFail() {
-        User user1 = new User(null, "spring@gamil.com", "User1");
-        Long savedUserId = jpaUserService.joinUser(user1);
-        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        Long savedUserId = savedUser.getId();
 
+        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
         TodoResponseDto result = jpaTodoService.createTodo(createDto);
         Long todoId = result.getId();
 
@@ -161,8 +171,10 @@ class JpaTodoServiceImplTest {
     @Test
     @DisplayName("할 일 목록 전체 조회")
     void findAll() {
-        User user1 = new User(null, "spring@gamil.com", "User1");
-        Long savedUserId = jpaUserService.joinUser(user1);
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        Long savedUserId = savedUser.getId();
+
         TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId);
         TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId);
 
@@ -175,8 +187,9 @@ class JpaTodoServiceImplTest {
     @Test
     @DisplayName("할 일 목록 전체 최신순 (내림차순) 조회")
     void findAllDesc() {
-        User user1 = new User(null, "spring@gamil.com", "User1");
-        Long savedUserId = jpaUserService.joinUser(user1);
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        Long savedUserId = savedUser.getId();
         TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId);
         TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId);
         TodoCreateDto createDto3 = new TodoCreateDto("eat something", savedUserId);
@@ -197,8 +210,9 @@ class JpaTodoServiceImplTest {
     @Test
     @DisplayName("완료된 할 일들만 조회")
     void findAllByComplete() {
-        User user1 = new User(null, "spring@gamil.com", "User1");
-        Long savedUserId = jpaUserService.joinUser(user1);
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        Long savedUserId = savedUser.getId();
         TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId);
         TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId);
         TodoCreateDto createDto3 = new TodoCreateDto("eat something", savedUserId);
@@ -216,8 +230,9 @@ class JpaTodoServiceImplTest {
     @Test
     @DisplayName("미완료인 할 일들만 조회")
     void findAllByUnComplete() {
-        User user1 = new User(null, "spring@gamil.com", "User1");
-        Long savedUserId = jpaUserService.joinUser(user1);
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        Long savedUserId = savedUser.getId();
         TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId);
         TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId);
         TodoCreateDto createDto3 = new TodoCreateDto("eat something", savedUserId);
@@ -234,8 +249,9 @@ class JpaTodoServiceImplTest {
     @Test
     @DisplayName("특정 키워드로 할 일을 조회할 수 있어야 한다")
     void findByTaskContaining() {
-        User user1 = new User(null, "spring@gamil.com", "User1");
-        Long savedUserId = jpaUserService.joinUser(user1);
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        Long savedUserId = savedUser.getId();
         TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId);
         TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId);
         TodoResponseDto result1 = jpaTodoService.createTodo(createDto1);
@@ -249,8 +265,9 @@ class JpaTodoServiceImplTest {
     @Test
     @DisplayName("해당 유저의 할 일 목록을 조회할 수 있다")
     void findTodoByUser() {
-        User user1 = new User(null, "spring@gamil.com", "User1");
-        Long savedUserId = jpaUserService.joinUser(user1);
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        Long savedUserId = savedUser.getId();
         TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId);
         TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId);
         TodoResponseDto result1 = jpaTodoService.createTodo(createDto1);
