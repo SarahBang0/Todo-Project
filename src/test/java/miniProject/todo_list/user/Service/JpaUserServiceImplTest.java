@@ -28,8 +28,6 @@ class JpaUserServiceImplTest {
     JpaTodoServiceImpl jpaTodoService;
     @Autowired
     JpaUserServiceImpl jpaUserService;
-    @Autowired
-    JpaUserRepository jpaUserRepository;
 /*
     @Autowired
     JpaUserRepository jpaUserRepository;

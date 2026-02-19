@@ -4,8 +4,7 @@ package miniProject.todo_list.todo;
 import lombok.RequiredArgsConstructor;
 import miniProject.todo_list.todo.Dto.TodoCreateDto;
 import miniProject.todo_list.todo.Dto.TodoResponseDto;
-import miniProject.todo_list.todo.Entity.Todo;
-import miniProject.todo_list.todo.Service.JpaTodoServiceImpl;
+import miniProject.todo_list.todo.Entity.Priority;
 import miniProject.todo_list.todo.Service.TodoService;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +26,7 @@ public class TodoController {
     // 모든 할 일 목록 최신순 조회
     @GetMapping("/api/todos/desc")
     public List<TodoResponseDto> findAllTodosDesc() {
-        return  jpaTodoService.findAllDesc();
+        return jpaTodoService.findAllDesc();
     }
 
     // 특정 할 일 조회
@@ -87,4 +86,22 @@ public class TodoController {
         return jpaTodoService.findByUserId(id);
     }
 
+    // 우선순위 별로 조회
+    @GetMapping("/api/todos/priority/{priority}")
+    public List<TodoResponseDto> findTodoByPriority(@PathVariable Priority priority) {
+        return jpaTodoService.findAllByPriority(priority);
+    }
+
+    // 우선순위 변경
+    @PatchMapping("/api/todos/{id}/priority/{priority}")
+    public TodoResponseDto updateTodoPriority(@PathVariable Long id, @PathVariable Priority priority) {
+        jpaTodoService.changeTodoPriority(id, priority);
+        return jpaTodoService.findTodoById(id);
+    }
+
+    // 우선순위 순서대로 조회
+    @GetMapping("/api/todos/sorted-by-priority")
+    public List<TodoResponseDto> findTodoByOrderByPriorityAsc() {
+        return jpaTodoService.findAllByOrderByPriorityAsc();
+    }
 }

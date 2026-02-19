@@ -2,8 +2,7 @@ package miniProject.todo_list.todo.Service;
 
 import miniProject.todo_list.todo.Dto.TodoCreateDto;
 import miniProject.todo_list.todo.Dto.TodoResponseDto;
-import miniProject.todo_list.todo.Entity.Todo;
-import miniProject.todo_list.user.Entity.User;
+import miniProject.todo_list.todo.Entity.Priority;
 
 import java.util.List;
 
@@ -30,4 +29,10 @@ public interface TodoService {
     List<TodoResponseDto> findByTaskContaining(String keyword);
 
     List<TodoResponseDto> findByUserId(Long userId);
+
+    TodoResponseDto changeTodoPriority(Long id, Priority priority);
+
+    List<TodoResponseDto> findAllByPriority(Priority priority);
+
+    List<TodoResponseDto> findAllByOrderByPriorityAsc();
 }

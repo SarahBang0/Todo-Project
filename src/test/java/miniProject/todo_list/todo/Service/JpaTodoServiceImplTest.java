@@ -2,10 +2,9 @@ package miniProject.todo_list.todo.Service;
 
 import miniProject.todo_list.todo.Dto.TodoCreateDto;
 import miniProject.todo_list.todo.Dto.TodoResponseDto;
-import miniProject.todo_list.todo.Entity.Todo;
+import miniProject.todo_list.todo.Entity.Priority;
 import miniProject.todo_list.user.Dto.UserJoinDto;
 import miniProject.todo_list.user.Dto.UserResponseDto;
-import miniProject.todo_list.user.Entity.User;
 import miniProject.todo_list.user.Service.JpaUserServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,14 +29,14 @@ class JpaTodoServiceImplTest {
     JpaUserServiceImpl jpaUserService;
 
     @Test
-    @DisplayName("할 일을 생성하고 조회할 수 있어야 한다.")
+    @DisplayName("할 일을 생성하고 조회할 수 있어야 한다. / 우선순위 지정 X")
     void createTodo() {
         // given (유저 생성)
         UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
         UserResponseDto savedUser = jpaUserService.joinUser(user1);
         Long savedUserId = savedUser.getId();
         // 생성용 DTO 준비
-        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
+        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId, null);
 
         // when
         TodoResponseDto response = jpaTodoService.createTodo(createDto);
@@ -51,13 +50,26 @@ class JpaTodoServiceImplTest {
     }
 
     @Test
+    @DisplayName("할 일 생성 및 조회 / 우선순위 지정 O")
+    void createTodo2() {
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        Long userId = savedUser.getId();
+        TodoResponseDto responseDto = jpaTodoService.createTodo(new TodoCreateDto("clean the room", userId, Priority.HIGH));
+
+        TodoResponseDto todoById = jpaTodoService.findTodoById(responseDto.getId());
+
+        assertThat(todoById.getPriority()).isEqualTo(Priority.HIGH);
+    }
+
+    @Test
     @DisplayName("삭제 성공 / 할 일을 삭제할 수 있어야 한다.")
     void deleteTodo() {
         UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
         UserResponseDto savedUser = jpaUserService.joinUser(user1);
         Long savedUserId = savedUser.getId();
 
-        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
+        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId, null);
         TodoResponseDto result = jpaTodoService.createTodo(createDto);
         Long todoId = result.getId();
 
@@ -78,95 +90,6 @@ class JpaTodoServiceImplTest {
         assertThat(e.getMessage()).isEqualTo("삭제 실패! 해당 Id의 할 일이 없습니다.");
     }
 
-    @Test
-    @DisplayName("상태 수정 성공 / 할 일 상태를 미완료에서 완료로 바꿀 수 있다")
-    void updateToComplete() {
-        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
-        UserResponseDto savedUser = jpaUserService.joinUser(user1);
-        Long savedUserId = savedUser.getId();
-
-        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
-        TodoResponseDto result = jpaTodoService.createTodo(createDto);
-        Long todoId = result.getId();
-
-        // 상태 변경
-        jpaTodoService.updateToComplete(todoId);
-        TodoResponseDto updated = jpaTodoService.findTodoById(todoId);
-
-        assertThat(updated.isComplete()).isTrue();
-    }
-
-    @Test
-    @DisplayName("상태 수정 실패 / 이미 완료인 할 일은 완료로 바꿀 수 없다")
-    void updateToCompleteFail() {
-        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
-        UserResponseDto savedUser = jpaUserService.joinUser(user1);
-        Long savedUserId = savedUser.getId();
-
-        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
-        TodoResponseDto result = jpaTodoService.createTodo(createDto);
-        Long todoId = result.getId();
-
-        // 상태 변경
-        jpaTodoService.updateToComplete(todoId);
-
-        IllegalStateException e = assertThrows(IllegalStateException.class,
-                () -> jpaTodoService.updateToComplete(todoId));
-        assertThat(e.getMessage()).isEqualTo("이미 완료된 상태입니다.");
-    }
-
-    @Test
-    @DisplayName("상태 수정 실패 / 존재하지 않는 할 일은 완료로 바꿀 수 없다")
-    void updateToCompleteFail2() {
-        Long temp = 12345L;
-        IllegalStateException e = assertThrows(IllegalStateException.class,
-                () -> jpaTodoService.updateToComplete(temp));
-        assertThat(e.getMessage()).isEqualTo("조회 실패! 해당 Id의 할 일이 없습니다.");
-    }
-
-    @Test
-    @DisplayName("상태 수정 성공 / 할 일 상태를 완료에서 미완료로 바꿀 수 있다")
-    void updateToUncomplete() {
-        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
-        UserResponseDto savedUser = jpaUserService.joinUser(user1);
-        Long savedUserId = savedUser.getId();
-
-        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
-        TodoResponseDto result = jpaTodoService.createTodo(createDto);
-        Long todoId = result.getId();
-
-        jpaTodoService.updateToComplete(todoId);
-        jpaTodoService.updateToUncomplete(todoId);
-
-        TodoResponseDto updated = jpaTodoService.findTodoById(todoId);
-
-        assertThat(updated.isComplete()).isFalse();
-    }
-
-    @Test
-    @DisplayName("상태 수정 실패 / 미완료인 할 일은 미완료로 바꿀 수 없다")
-    void updateToUncmpleteFail() {
-        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
-        UserResponseDto savedUser = jpaUserService.joinUser(user1);
-        Long savedUserId = savedUser.getId();
-
-        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUserId);
-        TodoResponseDto result = jpaTodoService.createTodo(createDto);
-        Long todoId = result.getId();
-
-        IllegalStateException e = assertThrows(IllegalStateException.class,
-                () -> jpaTodoService.updateToUncomplete(todoId));
-        assertThat(e.getMessage()).isEqualTo("미완료인 할 일은 미완료로 바꿀 수 없습니다.");
-    }
-
-    @Test
-    @DisplayName("상태 수정 실패 / 존재하지 않는 할 일은 완료로 바꿀 수 없다")
-    void updateToUncompleteFail2() {
-        Long temp = 12345L;
-        IllegalStateException e = assertThrows(IllegalStateException.class,
-                () -> jpaTodoService.updateToUncomplete(temp));
-        assertThat(e.getMessage()).isEqualTo("조회 실패! 해당 Id의 할 일이 없습니다.");
-    }
 
     @Test
     @DisplayName("할 일 목록 전체 조회")
@@ -175,8 +98,8 @@ class JpaTodoServiceImplTest {
         UserResponseDto savedUser = jpaUserService.joinUser(user1);
         Long savedUserId = savedUser.getId();
 
-        TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId);
-        TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId);
+        TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId, null);
+        TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId, null);
 
         TodoResponseDto result1 = jpaTodoService.createTodo(createDto1);
         TodoResponseDto result2 = jpaTodoService.createTodo(createDto2);
@@ -190,9 +113,9 @@ class JpaTodoServiceImplTest {
         UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
         UserResponseDto savedUser = jpaUserService.joinUser(user1);
         Long savedUserId = savedUser.getId();
-        TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId);
-        TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId);
-        TodoCreateDto createDto3 = new TodoCreateDto("eat something", savedUserId);
+        TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId, null);
+        TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId, null);
+        TodoCreateDto createDto3 = new TodoCreateDto("eat something", savedUserId, null);
 
         TodoResponseDto result1 = jpaTodoService.createTodo(createDto1);
         TodoResponseDto result2 = jpaTodoService.createTodo(createDto2);
@@ -213,9 +136,9 @@ class JpaTodoServiceImplTest {
         UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
         UserResponseDto savedUser = jpaUserService.joinUser(user1);
         Long savedUserId = savedUser.getId();
-        TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId);
-        TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId);
-        TodoCreateDto createDto3 = new TodoCreateDto("eat something", savedUserId);
+        TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId,null);
+        TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId, null);
+        TodoCreateDto createDto3 = new TodoCreateDto("eat something", savedUserId, null);
 
         TodoResponseDto result1 = jpaTodoService.createTodo(createDto1);
         TodoResponseDto result2 = jpaTodoService.createTodo(createDto2);
@@ -233,9 +156,9 @@ class JpaTodoServiceImplTest {
         UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
         UserResponseDto savedUser = jpaUserService.joinUser(user1);
         Long savedUserId = savedUser.getId();
-        TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId);
-        TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId);
-        TodoCreateDto createDto3 = new TodoCreateDto("eat something", savedUserId);
+        TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId, null);
+        TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId, null);
+        TodoCreateDto createDto3 = new TodoCreateDto("eat something", savedUserId,null);
 
         TodoResponseDto result1 = jpaTodoService.createTodo(createDto1);
         TodoResponseDto result2 = jpaTodoService.createTodo(createDto2);
@@ -252,8 +175,8 @@ class JpaTodoServiceImplTest {
         UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
         UserResponseDto savedUser = jpaUserService.joinUser(user1);
         Long savedUserId = savedUser.getId();
-        TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId);
-        TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId);
+        TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId,null);
+        TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId,null);
         TodoResponseDto result1 = jpaTodoService.createTodo(createDto1);
         TodoResponseDto result2 = jpaTodoService.createTodo(createDto2);
 
@@ -268,8 +191,8 @@ class JpaTodoServiceImplTest {
         UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
         UserResponseDto savedUser = jpaUserService.joinUser(user1);
         Long savedUserId = savedUser.getId();
-        TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId);
-        TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId);
+        TodoCreateDto createDto1 = new TodoCreateDto("clean the room", savedUserId, null);
+        TodoCreateDto createDto2 = new TodoCreateDto("take a shower", savedUserId,null);
         TodoResponseDto result1 = jpaTodoService.createTodo(createDto1);
         TodoResponseDto result2 = jpaTodoService.createTodo(createDto2);
 
@@ -277,4 +200,60 @@ class JpaTodoServiceImplTest {
         assertThat(byUser.size()).isEqualTo(2);
     }
 
+    @Test
+    @DisplayName("할 일의 우선순위를 수정할 수 있다")
+    void updateTodoPriority() {
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        TodoCreateDto createDto = new TodoCreateDto("clean the room", savedUser.getId(), null);
+        TodoResponseDto result = jpaTodoService.createTodo(createDto);
+
+        jpaTodoService.changeTodoPriority(result.getId(), Priority.HIGH);
+        TodoResponseDto todoById = jpaTodoService.findTodoById(result.getId());
+
+        assertThat(todoById.getPriority()).isEqualTo(Priority.HIGH);
+    }
+
+    @Test
+    @DisplayName("할 일의 우선순위로 검색 할 수 있다")
+    void findAllByPriority() {
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        TodoResponseDto todoDto1 = jpaTodoService.createTodo(new TodoCreateDto("clean the room", savedUser.getId(),null));
+        TodoResponseDto todoDto2 = jpaTodoService.createTodo(new TodoCreateDto("drinking", savedUser.getId(),null));
+
+        jpaTodoService.changeTodoPriority(todoDto1.getId(), Priority.HIGH);
+
+        List<TodoResponseDto> todosMidium = jpaTodoService.findAllByPriority(Priority.MIDIUM);
+        List<TodoResponseDto> todosHigh = jpaTodoService.findAllByPriority(Priority.HIGH);
+
+        assertThat(todosMidium.size()).isEqualTo(1);
+        assertThat(todosHigh.size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("우선 순위 높은 순서대로 할 일을 조회할 수 있다")
+    void findAllByOrderByPriorityAsc() {
+        UserJoinDto user1 = new UserJoinDto("spring@gmail.com", "User1");
+        UserResponseDto savedUser = jpaUserService.joinUser(user1);
+        TodoResponseDto todoDto1 = jpaTodoService.createTodo(new TodoCreateDto("clean the room", savedUser.getId(),null));
+        TodoResponseDto todoDto2 = jpaTodoService.createTodo(new TodoCreateDto("drinking", savedUser.getId(),null));
+        TodoResponseDto todoDto3 = jpaTodoService.createTodo(new TodoCreateDto("study java", savedUser.getId(),null));
+
+        jpaTodoService.changeTodoPriority(todoDto2.getId(), Priority.HIGH);
+        TodoResponseDto resultTodo2 = jpaTodoService.findTodoById(todoDto2.getId());
+        jpaTodoService.changeTodoPriority(todoDto1.getId(), Priority.LOW);
+        TodoResponseDto resultTodo1 = jpaTodoService.findTodoById(todoDto1.getId());
+
+        List<TodoResponseDto> allByOrderByPriorityAsc = jpaTodoService.findAllByOrderByPriorityAsc();
+        System.out.println(allByOrderByPriorityAsc.get(0).getPriority());
+        System.out.println(allByOrderByPriorityAsc.get(1).getPriority());
+        System.out.println(allByOrderByPriorityAsc.get(2).getPriority());
+
+        assertThat(allByOrderByPriorityAsc.get(0).getPriority()).isEqualTo(resultTodo2.getPriority());
+        assertThat(allByOrderByPriorityAsc.get(1).getId()).isEqualTo(todoDto3.getId());
+        assertThat(allByOrderByPriorityAsc.get(2).getId()).isEqualTo(resultTodo1.getId());
+
+
+    }
 }

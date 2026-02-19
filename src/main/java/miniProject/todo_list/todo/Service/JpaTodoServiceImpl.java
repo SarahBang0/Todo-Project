@@ -2,6 +2,7 @@ package miniProject.todo_list.todo.Service;
 
 import miniProject.todo_list.todo.Dto.TodoCreateDto;
 import miniProject.todo_list.todo.Dto.TodoResponseDto;
+import miniProject.todo_list.todo.Entity.Priority;
 import miniProject.todo_list.todo.Entity.Todo;
 import miniProject.todo_list.todo.Repository.JpaTodoRepository;
 import miniProject.todo_list.user.Entity.User;
@@ -129,5 +130,34 @@ public class JpaTodoServiceImpl implements TodoService{
             todoResponseDtos.add(TodoResponseDto.fromEntity(todo));
         }
         return todoResponseDtos;
+    }
+
+    @Override
+    @Transactional
+    public TodoResponseDto changeTodoPriority(Long todoId, Priority priority) {
+        Todo findTodo = jpaTodoRepository.findById(todoId).orElseThrow(()->
+                new IllegalStateException("존재하지 않는 할 일 입니다."));
+        findTodo.changePriority(priority);
+        return TodoResponseDto.fromEntity(findTodo);
+    }
+
+    @Override
+    public List<TodoResponseDto> findAllByPriority(Priority priority) {
+        List<Todo> todoList = jpaTodoRepository.findAllByPriority(priority);
+        List<TodoResponseDto> todoResponseDtos = new ArrayList<>();
+        for(Todo todo : todoList) {
+            todoResponseDtos.add(TodoResponseDto.fromEntity(todo));
+        }
+        return  todoResponseDtos;
+    }
+
+    @Override
+    public List<TodoResponseDto> findAllByOrderByPriorityAsc() {
+        List<Todo> todoList = jpaTodoRepository.findAllByOrderByPriority();
+        List<TodoResponseDto> todoResponseDtos = new ArrayList<>();
+        for(Todo todo : todoList) {
+            todoResponseDtos.add(TodoResponseDto.fromEntity(todo));
+        }
+        return  todoResponseDtos;
     }
 }

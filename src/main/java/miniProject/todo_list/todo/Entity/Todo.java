@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import miniProject.todo_list.user.Entity.User;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @ToString
@@ -21,6 +23,12 @@ public class Todo {
     @Column(name = "is_complete")
     private boolean isComplete;
 
+    @Enumerated(EnumType.ORDINAL)
+    private Priority priority;
+/*
+    @Column(name = "deadline")
+    private LocalDate deadline;*/
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -33,6 +41,14 @@ public class Todo {
         this.task = task;
         this.user = user;
         this.isComplete = false;
+        this.priority = Priority.MIDIUM;
+    }
+
+    public Todo(Long id, String task, Priority priority, User user) {
+        this.id = id;
+        this.task = task;
+        this.priority = priority;
+        this.user = user;
     }
 
     public boolean isComplete() {
@@ -56,4 +72,7 @@ public class Todo {
     }
 
 
+    public void changePriority(Priority priority) {
+        this.priority = priority;
+    }
 }

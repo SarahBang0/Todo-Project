@@ -31,13 +31,13 @@ public class UserController {
     }
 
     // 새로운 유저 생성
-    @PostMapping("/api/users/create")
+    @PostMapping("/api/users")
     public UserResponseDto createUser(@RequestBody UserJoinDto dto) {
         return jpaUserService.joinUser(dto);
     }
 
     // 유저 삭제
-    @DeleteMapping("/api/users/{id}/delete")
+    @DeleteMapping("/api/users/{id}")
     public void deleteUser(@PathVariable Long id) {
         jpaUserService.quitUser(id, id);
     }
