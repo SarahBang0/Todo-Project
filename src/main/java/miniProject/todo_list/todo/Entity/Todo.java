@@ -41,7 +41,7 @@ public class Todo {
         this.task = task;
         this.user = user;
         this.isComplete = false;
-        this.priority = Priority.MIDIUM;
+        this.priority = Priority.MEDIUM;
     }
 
     public Todo(Long id, String task, Priority priority, User user) {

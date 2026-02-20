@@ -19,5 +19,9 @@ public interface UserService {
 
     UserResponseDto updateUser(Long userId, UserUpdateDto dto);
 
+    UserResponseDto findUserByEmail(String email);
+
+    List<UserResponseDto> findUserByUserName(String userName);
+
 
 }

@@ -78,7 +78,7 @@ class JpaTodoServiceImplTest {
 
         IllegalStateException e = assertThrows(IllegalStateException.class,
                 () -> jpaTodoService.findTodoById(todoId));
-        assertThat(e.getMessage()).isEqualTo("조회 실패! 해당 Id의 할 일이 없습니다.");
+        assertThat(e.getMessage()).isEqualTo("할 일 조회 실패! 해당 Id의 할 일이 없습니다.");
     }
 
     @Test
@@ -87,7 +87,7 @@ class JpaTodoServiceImplTest {
         Long temp = 12345L;
         IllegalStateException e = assertThrows(IllegalStateException.class,
                 () -> jpaTodoService.deleteTodo(temp));
-        assertThat(e.getMessage()).isEqualTo("삭제 실패! 해당 Id의 할 일이 없습니다.");
+        assertThat(e.getMessage()).isEqualTo("할 일 조회 실패! 해당 Id의 할 일이 없습니다.");
     }
 
 
@@ -224,7 +224,7 @@ class JpaTodoServiceImplTest {
 
         jpaTodoService.changeTodoPriority(todoDto1.getId(), Priority.HIGH);
 
-        List<TodoResponseDto> todosMidium = jpaTodoService.findAllByPriority(Priority.MIDIUM);
+        List<TodoResponseDto> todosMidium = jpaTodoService.findAllByPriority(Priority.MEDIUM);
         List<TodoResponseDto> todosHigh = jpaTodoService.findAllByPriority(Priority.HIGH);
 
         assertThat(todosMidium.size()).isEqualTo(1);

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.convert.DataSizeUnit;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,7 +80,7 @@ class JpaUserServiceImplTest {
 
         IllegalStateException e = assertThrows(IllegalStateException.class,
                 () -> jpaUserService.findUserById(savedUserId));
-        assertThat(e.getMessage()).isEqualTo("조회 실패! 해당 Id의 유저가 없습니다.");
+        assertThat(e.getMessage()).isEqualTo("유저 조회 실패! 해당 Id의 유저가 존재하지 않습니다.");
     }
 
     @Test
@@ -100,7 +101,7 @@ class JpaUserServiceImplTest {
         Long temp = 123456L;
         IllegalStateException e = assertThrows(IllegalStateException.class,
                 () -> jpaUserService.quitUser(temp, temp));
-        assertThat(e.getMessage()).isEqualTo("유저 삭제 실패! 해당 Id의 유저가 없습니다.");
+        assertThat(e.getMessage()).isEqualTo("유저 조회 실패! 해당 Id의 유저가 존재하지 않습니다.");
     }
 
     @Test
@@ -120,5 +121,25 @@ class JpaUserServiceImplTest {
         UserResponseDto updated = jpaUserService.updateUser(dto.getId(), new UserUpdateDto("java@gmail.com", "Hello"));
 
         assertThat(updated.getUserName()).isEqualTo("Hello");
+    }
+
+    @Test
+    @DisplayName("유저 이메일로 조회하기")
+    void findUserByEmail() {
+        UserResponseDto user = jpaUserService.joinUser(new UserJoinDto("spring@gmail.com", "User1"));
+        UserResponseDto result = jpaUserService.findUserByEmail("spring@gmail.com");
+
+        assertThat(result.getUserName()).isEqualTo("User1");
+        assertThat(result.getId()).isEqualTo(user.getId());
+    }
+
+    @Test
+    @DisplayName("유저 이름으로 조회하기")
+    void findUserByUserName() {
+        UserResponseDto user = jpaUserService.joinUser(new UserJoinDto("spring@gmail.com", "User1"));
+        List<UserResponseDto> result = jpaUserService.findUserByUserName("User1");
+
+        assertThat(result.get(0).getUserName()).isEqualTo(user.getUserName());
+        assertThat(result.size()).isEqualTo(1);
     }
 }

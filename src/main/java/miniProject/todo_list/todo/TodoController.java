@@ -48,7 +48,7 @@ public class TodoController {
         return jpaTodoService.findAllByUnComplete();
     }
 
-    // 특정 키워드로 할 일 찾기 (/api/todos/search/java)
+    // 특정 키워드로 할 일 찾기 (/api/todos/search?keyword=java)
     @GetMapping("/api/todos/search")
     public List<TodoResponseDto> findTodoByKeyword(@RequestParam("keyword") String keyword) {
         return jpaTodoService.findByTaskContaining(keyword);
@@ -106,6 +106,7 @@ public class TodoController {
         return jpaTodoService.findAllByOrderByPriorityAsc();
     }
 
+    // 할 일 내용 및 상태 변경
     @PatchMapping("/api/todos/{id}")
     public TodoResponseDto updateTodo(@PathVariable Long id, @RequestBody TodoUpdateDto dto) {
         TodoResponseDto updated = jpaTodoService.updateTodo(id, dto);

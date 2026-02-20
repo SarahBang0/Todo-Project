@@ -70,7 +70,7 @@ public class JpaTodoServiceImplUpdateTest {
         Long temp = 12345L;
         IllegalStateException e = assertThrows(IllegalStateException.class,
                 () -> jpaTodoService.updateToComplete(temp));
-        assertThat(e.getMessage()).isEqualTo("조회 실패! 해당 Id의 할 일이 없습니다.");
+        assertThat(e.getMessage()).isEqualTo("할 일 조회 실패! 해당 Id의 할 일이 없습니다.");
     }
 
     @Test
@@ -114,7 +114,7 @@ public class JpaTodoServiceImplUpdateTest {
         Long temp = 12345L;
         IllegalStateException e = assertThrows(IllegalStateException.class,
                 () -> jpaTodoService.updateToUncomplete(temp));
-        assertThat(e.getMessage()).isEqualTo("조회 실패! 해당 Id의 할 일이 없습니다.");
+        assertThat(e.getMessage()).isEqualTo("할 일 조회 실패! 해당 Id의 할 일이 없습니다.");
     }
 
     @Test

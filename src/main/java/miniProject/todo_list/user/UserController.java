@@ -44,10 +44,20 @@ public class UserController {
     }
 
     // 유저 정보 변경
-    @PatchMapping("/api/user/{id}")
+    @PatchMapping("/api/users/{id}")
     public UserResponseDto updateUser(@PathVariable Long id, @RequestBody UserUpdateDto dto) {
         return jpaUserService.updateUser(id, dto);
     }
 
+    // 이메일로 유저 찾기
+    @GetMapping("/api/users/search/email")
+    public UserResponseDto findUserByEmail(@RequestParam("email") String email) {
+        return jpaUserService.findUserByEmail(email);
+    }
 
+    // 이름으로 유저 찾기 (/api/users/search?username=sarah)
+    @GetMapping("/api/users/search/username")
+    public List<UserResponseDto> findUserByUserName(@RequestParam("username") String userName) {
+        return jpaUserService.findUserByUserName(userName);
+    }
 }

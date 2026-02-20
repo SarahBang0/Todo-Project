@@ -26,7 +26,7 @@ public class TodoCreateDto {
                 .task(this.task)
                 .user(user)
                 .isComplete(false)
-                .priority(this.priority != null ? this.priority : Priority.MIDIUM)
+                .priority(this.priority != null ? this.priority : Priority.MEDIUM)
                 .build();
     }
 
