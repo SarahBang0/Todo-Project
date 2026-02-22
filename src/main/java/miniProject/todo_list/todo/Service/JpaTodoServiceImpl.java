@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @Primary
@@ -36,14 +37,14 @@ public class JpaTodoServiceImpl implements TodoService{
     private User getUserOrThrow(Long userId) {
         System.out.println("userId = " + userId);
         return jpaUserRepository.findById(userId).orElseThrow(()->
-                new IllegalStateException("유저 조회 실패! 해당 Id의 유저가 존재하지 않습니다."));
+                new NoSuchElementException("유저 조회 실패! 해당 Id의 유저가 존재하지 않습니다."));
     }
 
     // 할 일 조회 검사 로직
     private Todo getTodoOrThrow(Long todoId) {
         System.out.println("todoId = " + todoId);
         return jpaTodoRepository.findById(todoId).orElseThrow(()->
-                new IllegalStateException("할 일 조회 실패! 해당 Id의 할 일이 없습니다."));
+                new NoSuchElementException("할 일 조회 실패! 해당 Id의 할 일이 없습니다."));
     }
 
     // Todo 엔티티 List -> Todo Dto List 변경 로직
@@ -53,7 +54,7 @@ public class JpaTodoServiceImpl implements TodoService{
             todoResponseDtos.add(TodoResponseDto.fromEntity(todo));
         }
         if(todoResponseDtos.size()==0) {
-            throw new IllegalStateException("해당하는 할 일 목록이 없습니다.");
+            throw new NoSuchElementException("해당하는 할 일 목록이 없습니다.");
         }
         return todoResponseDtos;
     }

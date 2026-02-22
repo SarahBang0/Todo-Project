@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -76,7 +77,7 @@ class JpaTodoServiceImplTest {
         jpaTodoService.deleteTodo(todoId);
 
 
-        IllegalStateException e = assertThrows(IllegalStateException.class,
+        NoSuchElementException e = assertThrows(NoSuchElementException.class,
                 () -> jpaTodoService.findTodoById(todoId));
         assertThat(e.getMessage()).isEqualTo("할 일 조회 실패! 해당 Id의 할 일이 없습니다.");
     }
@@ -85,7 +86,7 @@ class JpaTodoServiceImplTest {
     @DisplayName("삭제 실패 / 존재하지 않는 할 일은 삭제할 수 없다")
     void deleteTodoFail() {
         Long temp = 12345L;
-        IllegalStateException e = assertThrows(IllegalStateException.class,
+        NoSuchElementException e = assertThrows(NoSuchElementException.class,
                 () -> jpaTodoService.deleteTodo(temp));
         assertThat(e.getMessage()).isEqualTo("할 일 조회 실패! 해당 Id의 할 일이 없습니다.");
     }

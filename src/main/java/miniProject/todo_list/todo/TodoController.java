@@ -1,6 +1,7 @@
 package miniProject.todo_list.todo;
 
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import miniProject.todo_list.todo.Dto.TodoCreateDto;
 import miniProject.todo_list.todo.Dto.TodoResponseDto;
@@ -56,7 +57,7 @@ public class TodoController {
 
     // 새로운 할 일 생성
     @PostMapping("/api/todos")
-    public TodoResponseDto createTodo(@RequestBody TodoCreateDto dto) {
+    public TodoResponseDto createTodo(@RequestBody @Valid TodoCreateDto dto) {
         return jpaTodoService.createTodo(dto);
     }
 

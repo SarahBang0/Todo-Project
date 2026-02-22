@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @Primary
@@ -32,7 +33,7 @@ public class JpaUserServiceImpl implements UserService{
     private User getUserOrThrow(Long userId) {
         System.out.println("userId = " + userId);
         return jpaUserRepository.findById(userId).orElseThrow(() ->
-                new IllegalStateException("유저 조회 실패! 해당 Id의 유저가 존재하지 않습니다."));
+                new NoSuchElementException("유저 조회 실패! 해당 Id의 유저가 존재하지 않습니다."));
     }
 
     // User Entity List -> User Dto List 변경 로직

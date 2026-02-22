@@ -1,5 +1,7 @@
 package miniProject.todo_list.todo.Dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import miniProject.todo_list.todo.Entity.Priority;
 import miniProject.todo_list.todo.Entity.Todo;
@@ -14,7 +16,9 @@ import miniProject.todo_list.user.Entity.User;
 public class TodoCreateDto {
 
     // todo 만들 때 id 필요없음
+    @NotBlank(message = "할 일 제목은 필수 입력 값 입니다.")
     private String task;
+    @NotNull(message = "userId는 필수 입력 값 입니다.")
     private Long userId;
     private Priority priority;
 

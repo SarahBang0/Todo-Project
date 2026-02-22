@@ -1,5 +1,6 @@
 package miniProject.todo_list.user;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import miniProject.todo_list.todo.Service.JpaTodoServiceImpl;
 import miniProject.todo_list.user.Dto.UserJoinDto;
@@ -33,7 +34,7 @@ public class UserController {
 
     // 새로운 유저 생성
     @PostMapping("/api/users")
-    public UserResponseDto createUser(@RequestBody UserJoinDto dto) {
+    public UserResponseDto createUser(@RequestBody @Valid UserJoinDto dto) {
         return jpaUserService.joinUser(dto);
     }
 

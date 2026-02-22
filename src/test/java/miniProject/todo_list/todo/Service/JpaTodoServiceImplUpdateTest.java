@@ -14,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.NoSuchElementException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -68,7 +70,7 @@ public class JpaTodoServiceImplUpdateTest {
     @DisplayName("상태 수정 실패 / 존재하지 않는 할 일은 완료로 바꿀 수 없다")
     void updateToCompleteFail2() {
         Long temp = 12345L;
-        IllegalStateException e = assertThrows(IllegalStateException.class,
+        NoSuchElementException e = assertThrows(NoSuchElementException.class,
                 () -> jpaTodoService.updateToComplete(temp));
         assertThat(e.getMessage()).isEqualTo("할 일 조회 실패! 해당 Id의 할 일이 없습니다.");
     }
@@ -112,7 +114,7 @@ public class JpaTodoServiceImplUpdateTest {
     @DisplayName("상태 수정 실패 / 존재하지 않는 할 일은 완료로 바꿀 수 없다")
     void updateToUncompleteFail2() {
         Long temp = 12345L;
-        IllegalStateException e = assertThrows(IllegalStateException.class,
+        NoSuchElementException e = assertThrows(NoSuchElementException.class,
                 () -> jpaTodoService.updateToUncomplete(temp));
         assertThat(e.getMessage()).isEqualTo("할 일 조회 실패! 해당 Id의 할 일이 없습니다.");
     }

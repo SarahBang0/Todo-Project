@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -78,7 +79,7 @@ class JpaUserServiceImplTest {
 
         jpaUserService.quitUser(savedUserId, savedUserId);
 
-        IllegalStateException e = assertThrows(IllegalStateException.class,
+        NoSuchElementException e = assertThrows(NoSuchElementException.class,
                 () -> jpaUserService.findUserById(savedUserId));
         assertThat(e.getMessage()).isEqualTo("유저 조회 실패! 해당 Id의 유저가 존재하지 않습니다.");
     }
@@ -99,7 +100,7 @@ class JpaUserServiceImplTest {
     @DisplayName("유저 탈퇴 실패 - 존재하지 않는 유저 삭제")
     void quitUserFail2() {
         Long temp = 123456L;
-        IllegalStateException e = assertThrows(IllegalStateException.class,
+        NoSuchElementException e = assertThrows(NoSuchElementException.class,
                 () -> jpaUserService.quitUser(temp, temp));
         assertThat(e.getMessage()).isEqualTo("유저 조회 실패! 해당 Id의 유저가 존재하지 않습니다.");
     }
